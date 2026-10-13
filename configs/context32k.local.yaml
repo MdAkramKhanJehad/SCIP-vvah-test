@@ -1,0 +1,13 @@
+# Optional integration variant. The original baseline overlay stays unchanged.
+# These are upstream controls for prompt assembly; source remains available to tools.
+step2:
+  max_doc_chars: 4000
+  max_manifest_total_chars: 4000
+  max_inventory_files: 200
+  max_prompt_entry_points: 100
+  max_config_rep_bodies: 2
+  max_config_rep_chars: 1000
+step4:
+  inline_source: false
+step6_verify:
+  inline_source: false

@@ -1,0 +1,2093 @@
+{
+  "dataset_commit": "abfcb1aa0cb4e8719f6550b0a7b41169d7a3843f",
+  "selection_rule": "lexicographically smallest (repo_url, vulnerable commit), independent of annotations",
+  "smoke_target_id": "6429843b45889333",
+  "targets": [
+    {
+      "repo_url": "https://github.com/BerriAI/litellm",
+      "commit": "24f847b84c947e13b765edaf172f646fd1b06297",
+      "entry_ids": [
+        "entry-00419"
+      ],
+      "report_ids": [
+        "GHSA-JJHC-V7C2-5HH6"
+      ],
+      "target_id": "6429843b45889333"
+    },
+    {
+      "repo_url": "https://github.com/FlowiseAI/Flowise",
+      "commit": "1ae1638ed972bcc913611ae9268a972d0ae127ec",
+      "entry_ids": [
+        "entry-00061",
+        "entry-00065"
+      ],
+      "report_ids": [
+        "GHSA-FJH6-8679-9PCH",
+        "GHSA-X39M-3393-3QP4"
+      ],
+      "target_id": "a7514e3b32ff8726"
+    },
+    {
+      "repo_url": "https://github.com/FlowiseAI/Flowise",
+      "commit": "4b1b8ba376db92ba2974b70c9faee05444157dd9",
+      "entry_ids": [
+        "entry-00465",
+        "entry-00466"
+      ],
+      "report_ids": [
+        "GHSA-48M6-CH88-55MJ"
+      ],
+      "target_id": "0ccf396d3d6d289a"
+    },
+    {
+      "repo_url": "https://github.com/FlowiseAI/Flowise",
+      "commit": "55b6913c03f0dba37cc207975f0c0d0786e0f3c7",
+      "entry_ids": [
+        "entry-00258",
+        "entry-00259",
+        "entry-00260",
+        "entry-00261",
+        "entry-00262",
+        "entry-00263",
+        "entry-00277",
+        "entry-00278"
+      ],
+      "report_ids": [
+        "GHSA-FVCW-9W9R-PXC7",
+        "GHSA-J8G8-J7FC-43V6",
+        "GHSA-WVHQ-WP8G-C7VQ"
+      ],
+      "target_id": "98f50981584b013d"
+    },
+    {
+      "repo_url": "https://github.com/FlowiseAI/Flowise",
+      "commit": "7c803f4e0bd9e7a794a4ef2a2b45e58adff61a50",
+      "entry_ids": [
+        "entry-00063",
+        "entry-00064"
+      ],
+      "report_ids": [
+        "GHSA-V5W9-PRXF-W882"
+      ],
+      "target_id": "8ca9ff29aefecc7a"
+    },
+    {
+      "repo_url": "https://github.com/FlowiseAI/Flowise",
+      "commit": "9d6a41677759699e886750683ce7753f026b8418",
+      "entry_ids": [
+        "entry-00489",
+        "entry-00490",
+        "entry-00491"
+      ],
+      "report_ids": [
+        "GHSA-3PRP-9GF7-4RXX"
+      ],
+      "target_id": "4b3c2caf3f959654"
+    },
+    {
+      "repo_url": "https://github.com/FlowiseAI/Flowise",
+      "commit": "af81d87063b63829459ffdad3d05008dfbd2a238",
+      "entry_ids": [
+        "entry-00269",
+        "entry-00270"
+      ],
+      "report_ids": [
+        "GHSA-CWC3-P92J-G7QM"
+      ],
+      "target_id": "79236830e5bbf29e"
+    },
+    {
+      "repo_url": "https://github.com/FlowiseAI/Flowise",
+      "commit": "c045ceb872c01a583e817480de4fc1a0a4cbf57f",
+      "entry_ids": [
+        "entry-00268"
+      ],
+      "report_ids": [
+        "GHSA-MQ4R-H2GH-QV7X"
+      ],
+      "target_id": "66ba5cccc9a566e0"
+    },
+    {
+      "repo_url": "https://github.com/FlowiseAI/Flowise",
+      "commit": "e135b2943362da036a6942d931b9de76094874af",
+      "entry_ids": [
+        "entry-00264",
+        "entry-00265",
+        "entry-00266",
+        "entry-00267"
+      ],
+      "report_ids": [
+        "GHSA-5F53-522J-J454"
+      ],
+      "target_id": "ac6df9bc0a81ef37"
+    },
+    {
+      "repo_url": "https://github.com/FlowiseAI/Flowise",
+      "commit": "f0c1294173a55f26e0b972c39c0c16917f5ca9e7",
+      "entry_ids": [
+        "entry-00429",
+        "entry-00436",
+        "entry-00467",
+        "entry-00468",
+        "entry-00469",
+        "entry-00470",
+        "entry-00471",
+        "entry-00472",
+        "entry-00473",
+        "entry-00474",
+        "entry-00475",
+        "entry-00476",
+        "entry-00477",
+        "entry-00478",
+        "entry-00479",
+        "entry-00480",
+        "entry-00481",
+        "entry-00482",
+        "entry-00492"
+      ],
+      "report_ids": [
+        "GHSA-2X8M-83VC-6WV4",
+        "GHSA-4JPM-CGX2-8H37",
+        "GHSA-5FW2-MWHH-9947",
+        "GHSA-6F7G-V4PP-R667",
+        "GHSA-F6HC-C5JR-878P",
+        "GHSA-XHMJ-RG95-44HV"
+      ],
+      "target_id": "45628737bc18943d"
+    },
+    {
+      "repo_url": "https://github.com/NVIDIA/NeMo",
+      "commit": "4d313cf5f097529420f27278b28a569e15190b1b",
+      "entry_ids": [
+        "entry-00150",
+        "entry-00151",
+        "entry-00152",
+        "entry-00153",
+        "entry-00154",
+        "entry-00155",
+        "entry-00156",
+        "entry-00157"
+      ],
+      "report_ids": [
+        "GHSA-9379-MWVR-7WXX"
+      ],
+      "target_id": "a900578c7c9c65f5"
+    },
+    {
+      "repo_url": "https://github.com/NVIDIA/NeMo",
+      "commit": "d282d04322a8e3c9e30d743e15b1e409b05da0fd",
+      "entry_ids": [
+        "entry-00335",
+        "entry-00336",
+        "entry-00337"
+      ],
+      "report_ids": [
+        "GHSA-V7V2-M736-CF3C"
+      ],
+      "target_id": "a536896b93698420"
+    },
+    {
+      "repo_url": "https://github.com/NVIDIA/NeMo",
+      "commit": "ffee9a91f4b78ebb441825975a827d80167a21d8",
+      "entry_ids": [
+        "entry-00338",
+        "entry-00339",
+        "entry-00340",
+        "entry-00341",
+        "entry-00342",
+        "entry-00343",
+        "entry-00344",
+        "entry-00345",
+        "entry-00346",
+        "entry-00347",
+        "entry-00348"
+      ],
+      "report_ids": [
+        "GHSA-M4JW-WGMF-889X"
+      ],
+      "target_id": "9bea893d005e8510"
+    },
+    {
+      "repo_url": "https://github.com/PrefectHQ/fastmcp",
+      "commit": "c861862aededc7294cea5634d77e6926444ca101",
+      "entry_ids": [
+        "entry-00391",
+        "entry-00392",
+        "entry-00394",
+        "entry-00395"
+      ],
+      "report_ids": [
+        "GHSA-VV7Q-7JX5-F767"
+      ],
+      "target_id": "b354c82f9c2fdcf9"
+    },
+    {
+      "repo_url": "https://github.com/Significant-Gravitas/AutoGPT",
+      "commit": "f0c25036082a5e53650ae7230bcfcf9309bbb5d5",
+      "entry_ids": [
+        "entry-00097",
+        "entry-00098"
+      ],
+      "report_ids": [
+        "GHSA-R277-3XC5-C79V"
+      ],
+      "target_id": "4a986627ff6c828e"
+    },
+    {
+      "repo_url": "https://github.com/Tencent/WeKnora",
+      "commit": "10b6c98078dc5206c8fd00d3eebe5535a7571eb4",
+      "entry_ids": [
+        "entry-00271",
+        "entry-00272",
+        "entry-00273",
+        "entry-00274"
+      ],
+      "report_ids": [
+        "GHSA-CCJ6-79J6-CQ5Q"
+      ],
+      "target_id": "980da569b51594e2"
+    },
+    {
+      "repo_url": "https://github.com/Tencent/WeKnora",
+      "commit": "a20541cd9d0a54dbff0b9112f1299c64347370ff",
+      "entry_ids": [
+        "entry-00080",
+        "entry-00081"
+      ],
+      "report_ids": [
+        "GHSA-78H3-63C4-5FQC"
+      ],
+      "target_id": "3fb9b2723f449022"
+    },
+    {
+      "repo_url": "https://github.com/Tencent/WeKnora",
+      "commit": "a5d1233b969f66219cf183ec43349089169f1f88",
+      "entry_ids": [
+        "entry-00276"
+      ],
+      "report_ids": [
+        "GHSA-H6GW-8F77-MMMP"
+      ],
+      "target_id": "21996b3455e4b153"
+    },
+    {
+      "repo_url": "https://github.com/Tencent/WeKnora",
+      "commit": "de06bb24d319da975ce51bd9668047fe4010e867",
+      "entry_ids": [
+        "entry-00275"
+      ],
+      "report_ids": [
+        "GHSA-2F4C-VRJQ-RCGV"
+      ],
+      "target_id": "4724bb1ab30fa8da"
+    },
+    {
+      "repo_url": "https://github.com/apache/airflow",
+      "commit": "19c1a16dc8b44ba470198c300b25defc7848576f",
+      "entry_ids": [
+        "entry-00313"
+      ],
+      "report_ids": [
+        "GHSA-4M3H-WP5W-5HQH"
+      ],
+      "target_id": "aca68586fc4865cd"
+    },
+    {
+      "repo_url": "https://github.com/apache/airflow",
+      "commit": "dba47277f309255c7d40b1001578411d5cb29e2b",
+      "entry_ids": [
+        "entry-00314",
+        "entry-00315",
+        "entry-00316"
+      ],
+      "report_ids": [
+        "GHSA-8X34-9Q3V-H7G8"
+      ],
+      "target_id": "e4ce207f8adeb4ff"
+    },
+    {
+      "repo_url": "https://github.com/apache/airflow",
+      "commit": "df4cb30b116c8628afc465876e08d58f2bcb897b",
+      "entry_ids": [
+        "entry-00464"
+      ],
+      "report_ids": [
+        "GHSA-Q2HG-643C-GW8H"
+      ],
+      "target_id": "925316e51ac82a12"
+    },
+    {
+      "repo_url": "https://github.com/aquasecurity/trivy",
+      "commit": "1885610c6a34811c8296416ae69f568002ef11ec",
+      "entry_ids": [
+        "entry-00332",
+        "entry-00333",
+        "entry-00334"
+      ],
+      "report_ids": [
+        "GHSA-69FQ-XP46-6X23"
+      ],
+      "target_id": "38f8818e7c6a9053"
+    },
+    {
+      "repo_url": "https://github.com/czlonkowski/n8n-mcp",
+      "commit": "ff486ea04f0b20460141e5ef2be3d518e1772b80",
+      "entry_ids": [
+        "entry-00506",
+        "entry-00507",
+        "entry-00508"
+      ],
+      "report_ids": [
+        "GHSA-75HX-XJ24-MQRW"
+      ],
+      "target_id": "14c7f535dce6ffbb"
+    },
+    {
+      "repo_url": "https://github.com/google/adk-python",
+      "commit": "d1121317ef4e1ac559f4ae13855ac1af28eef8f6",
+      "entry_ids": [
+        "entry-00430",
+        "entry-00431",
+        "entry-00432",
+        "entry-00433",
+        "entry-00434",
+        "entry-00435"
+      ],
+      "report_ids": [
+        "GHSA-RG7C-G689-FR3X"
+      ],
+      "target_id": "f6a37dbd0beec9d9"
+    },
+    {
+      "repo_url": "https://github.com/jlowin/fastmcp",
+      "commit": "6bade1cbd973cbbbca26a84ed7c4cc58ecfda5b3",
+      "entry_ids": [
+        "entry-00310",
+        "entry-00311"
+      ],
+      "report_ids": [
+        "GHSA-5H2M-4Q8J-PQPJ"
+      ],
+      "target_id": "e31f8462ea742e96"
+    },
+    {
+      "repo_url": "https://github.com/langchain-ai/langchain",
+      "commit": "b7d1831f9d3560ed4fb45134861eef3f4544eff3",
+      "entry_ids": [
+        "entry-00066",
+        "entry-00067",
+        "entry-00068"
+      ],
+      "report_ids": [
+        "GHSA-6QV9-48XG-FC7F"
+      ],
+      "target_id": "ad440bb0af92fb96"
+    },
+    {
+      "repo_url": "https://github.com/langflow-ai/langflow",
+      "commit": "198fab1dc7d4e018fd92767e226b6da6057cd704",
+      "entry_ids": [
+        "entry-00325",
+        "entry-00326"
+      ],
+      "report_ids": [
+        "GHSA-PH9W-R52H-28P7"
+      ],
+      "target_id": "75d645f7c3cacdf2"
+    },
+    {
+      "repo_url": "https://github.com/langflow-ai/langflow",
+      "commit": "36eea7ee9db1ce6119dfd85364f870a219ea2f7c",
+      "entry_ids": [
+        "entry-00317"
+      ],
+      "report_ids": [
+        "GHSA-RF6X-R45M-XV3W"
+      ],
+      "target_id": "52cd207b9aa4cac0"
+    },
+    {
+      "repo_url": "https://github.com/langflow-ai/langflow",
+      "commit": "73c1f203b0205d00928a0af7fa0e0fc93170f03e",
+      "entry_ids": [
+        "entry-00372",
+        "entry-00373",
+        "entry-00374"
+      ],
+      "report_ids": [
+        "GHSA-8C4J-F57C-35CF"
+      ],
+      "target_id": "775082bd83d6101e"
+    },
+    {
+      "repo_url": "https://github.com/langflow-ai/langflow",
+      "commit": "908c141d972118286d682124ce53ced16a4140ea",
+      "entry_ids": [
+        "entry-00071",
+        "entry-00072",
+        "entry-00073"
+      ],
+      "report_ids": [
+        "GHSA-C5CP-VX83-JHQX"
+      ],
+      "target_id": "fb5b3bf5dac9011c"
+    },
+    {
+      "repo_url": "https://github.com/langflow-ai/langflow",
+      "commit": "922a49acac1449bebcc50b2e4ac253e7a1235c92",
+      "entry_ids": [
+        "entry-00324"
+      ],
+      "report_ids": [
+        "GHSA-7GRX-3XCX-2XV5"
+      ],
+      "target_id": "5ef473b3722083c2"
+    },
+    {
+      "repo_url": "https://github.com/langflow-ai/langflow",
+      "commit": "e8bbae8eeb8729abd650f07bfc55957cbdbc1636",
+      "entry_ids": [
+        "entry-00320",
+        "entry-00321"
+      ],
+      "report_ids": [
+        "GHSA-G2J9-7RJ2-GM6C"
+      ],
+      "target_id": "cebf6dfa0d8c3e1f"
+    },
+    {
+      "repo_url": "https://github.com/milvus-io/milvus",
+      "commit": "2fad5b34f7d3cf44cf0436ae7f1f31fabf17b6a0",
+      "entry_ids": [
+        "entry-00058"
+      ],
+      "report_ids": [
+        "GHSA-MHJQ-8C7M-3F7P"
+      ],
+      "target_id": "6c60e9cd2ae9f109"
+    },
+    {
+      "repo_url": "https://github.com/milvus-io/milvus",
+      "commit": "5519df6efc738abadf46b23cf63b51a2145146d5",
+      "entry_ids": [
+        "entry-00117",
+        "entry-00118",
+        "entry-00119",
+        "entry-00120"
+      ],
+      "report_ids": [
+        "GHSA-7PPG-37FH-VCR6"
+      ],
+      "target_id": "5cc88d30b71d5a69"
+    },
+    {
+      "repo_url": "https://github.com/mlflow/mlflow",
+      "commit": "083eac9cd0be4a8934fac7010f9248c7888c6da4",
+      "entry_ids": [
+        "entry-00413",
+        "entry-00414",
+        "entry-00415",
+        "entry-00416"
+      ],
+      "report_ids": [
+        "GHSA-7QHF-V65M-G5F3"
+      ],
+      "target_id": "b4baec16af8099e3"
+    },
+    {
+      "repo_url": "https://github.com/mlflow/mlflow",
+      "commit": "83b9416cf1cf13216406c81842a5c98c5b1f06fc",
+      "entry_ids": [
+        "entry-00171"
+      ],
+      "report_ids": [
+        "GHSA-GQ3W-7JJ3-X7GR"
+      ],
+      "target_id": "0348c857cf7738cc"
+    },
+    {
+      "repo_url": "https://github.com/mlflow/mlflow",
+      "commit": "ba41980d604d7fd7964b038945989a5077d1a645",
+      "entry_ids": [
+        "entry-00101",
+        "entry-00102"
+      ],
+      "report_ids": [
+        "GHSA-4X5P-F36R-MXXR"
+      ],
+      "target_id": "407eec6670d4d5ce"
+    },
+    {
+      "repo_url": "https://github.com/mlflow/mlflow",
+      "commit": "d1312edfca36c7acae0d064ef6a094eded88e14f",
+      "entry_ids": [
+        "entry-00389",
+        "entry-00390"
+      ],
+      "report_ids": [
+        "GHSA-RVHJ-8CHJ-8V3C"
+      ],
+      "target_id": "57fd6d037633009c"
+    },
+    {
+      "repo_url": "https://github.com/modelcontextprotocol/typescript-sdk",
+      "commit": "50d9fa3cd12e807e7963bcb9e1548786d3d5d941",
+      "entry_ids": [
+        "entry-00114",
+        "entry-00115"
+      ],
+      "report_ids": [
+        "GHSA-345P-7CG4-V4C7"
+      ],
+      "target_id": "0da8e01fb3324b66"
+    },
+    {
+      "repo_url": "https://github.com/n8n-io/n8n",
+      "commit": "008cd8d08369ad188625fb5efaa6fa3707c1548e",
+      "entry_ids": [
+        "entry-00082",
+        "entry-00083"
+      ],
+      "report_ids": [
+        "GHSA-V98V-FF95-F3CP"
+      ],
+      "target_id": "0145abad75553a9e"
+    },
+    {
+      "repo_url": "https://github.com/n8n-io/n8n",
+      "commit": "09e2c2b5547b49a824a8265d312583f5d1f5c79f",
+      "entry_ids": [
+        "entry-00511",
+        "entry-00512"
+      ],
+      "report_ids": [
+        "GHSA-6CQR-8CFR-67F8"
+      ],
+      "target_id": "ed7f69ebd839c9a3"
+    },
+    {
+      "repo_url": "https://github.com/n8n-io/n8n",
+      "commit": "24af748fd3c809920afddfe58bf99c7fce6063d9",
+      "entry_ids": [
+        "entry-00112",
+        "entry-00113"
+      ],
+      "report_ids": [
+        "GHSA-HV53-3329-VMRM"
+      ],
+      "target_id": "6884b2681ba03003"
+    },
+    {
+      "repo_url": "https://github.com/n8n-io/n8n",
+      "commit": "3af9095245be3aaad6bc16622f379f79c6c6068f",
+      "entry_ids": [
+        "entry-00174",
+        "entry-00175",
+        "entry-00176",
+        "entry-00189",
+        "entry-00190",
+        "entry-00191"
+      ],
+      "report_ids": [
+        "GHSA-2P9H-RQJW-GM92",
+        "GHSA-JJPJ-P2WH-QF23",
+        "GHSA-MMGG-M5J7-F83H"
+      ],
+      "target_id": "c6661ed46337a062"
+    },
+    {
+      "repo_url": "https://github.com/n8n-io/n8n",
+      "commit": "3cdfff7e6cbbc82111dda0303b7a7a1d8b111c28",
+      "entry_ids": [
+        "entry-00355"
+      ],
+      "report_ids": [
+        "GHSA-C545-X2RH-82FC"
+      ],
+      "target_id": "f662d20069063721"
+    },
+    {
+      "repo_url": "https://github.com/n8n-io/n8n",
+      "commit": "3f02194f6d17bc2b8c682e38a891413e48cbd0c1",
+      "entry_ids": [
+        "entry-00172",
+        "entry-00173"
+      ],
+      "report_ids": [
+        "GHSA-75G8-RV7V-32F7"
+      ],
+      "target_id": "a5b21acf1d7be08b"
+    },
+    {
+      "repo_url": "https://github.com/n8n-io/n8n",
+      "commit": "4bb3552d8a0c57b65571f06bdd976bb7431e81b2",
+      "entry_ids": [
+        "entry-00107",
+        "entry-00108",
+        "entry-00109"
+      ],
+      "report_ids": [
+        "GHSA-9G95-QF3F-GGRW"
+      ],
+      "target_id": "b684018b2b883601"
+    },
+    {
+      "repo_url": "https://github.com/n8n-io/n8n",
+      "commit": "4c6b0180bd62b4ec79ae752975398a377b59c204",
+      "entry_ids": [
+        "entry-00351",
+        "entry-00352"
+      ],
+      "report_ids": [
+        "GHSA-XVH5-5QG4-X9QP"
+      ],
+      "target_id": "5151dda85ac4c6c9"
+    },
+    {
+      "repo_url": "https://github.com/n8n-io/n8n",
+      "commit": "538181cbe32a92616df5e00d7ffaf4d568557f4f",
+      "entry_ids": [
+        "entry-00185",
+        "entry-00186"
+      ],
+      "report_ids": [
+        "GHSA-X2MW-7J39-93XQ"
+      ],
+      "target_id": "44c2c62a8e1eaa0b"
+    },
+    {
+      "repo_url": "https://github.com/n8n-io/n8n",
+      "commit": "57d6015f2ea0442c24e0449105325b7e36f066df",
+      "entry_ids": [
+        "entry-00103"
+      ],
+      "report_ids": [
+        "GHSA-825Q-W924-XHGX"
+      ],
+      "target_id": "6cb2a9661e2e2fb0"
+    },
+    {
+      "repo_url": "https://github.com/n8n-io/n8n",
+      "commit": "60670e1e40d304a4c46687a20ecaaf239e729632",
+      "entry_ids": [
+        "entry-00084",
+        "entry-00085",
+        "entry-00086"
+      ],
+      "report_ids": [
+        "GHSA-58JC-RCG5-95F3"
+      ],
+      "target_id": "888609c895616402"
+    },
+    {
+      "repo_url": "https://github.com/n8n-io/n8n",
+      "commit": "6d2e489e54d1d463dcd40e8b9c46fcd36c09f5e1",
+      "entry_ids": [
+        "entry-00356",
+        "entry-00357"
+      ],
+      "report_ids": [
+        "GHSA-FXCW-H3QJ-8M8P"
+      ],
+      "target_id": "7feb7899e03fb3c9"
+    },
+    {
+      "repo_url": "https://github.com/n8n-io/n8n",
+      "commit": "732f2a3d3ddba59fb6e51bf2534fd33792a2cde3",
+      "entry_ids": [
+        "entry-00358",
+        "entry-00359",
+        "entry-00360",
+        "entry-00361"
+      ],
+      "report_ids": [
+        "GHSA-98C2-4CR3-4JC3",
+        "GHSA-MXRG-77HM-89HV"
+      ],
+      "target_id": "0cb3eb6b90f425a9"
+    },
+    {
+      "repo_url": "https://github.com/n8n-io/n8n",
+      "commit": "8a5d4d5746f55a2fbb1566508bccfa729a304b60",
+      "entry_ids": [
+        "entry-00110",
+        "entry-00111"
+      ],
+      "report_ids": [
+        "GHSA-QPQ4-PW7F-PP8W"
+      ],
+      "target_id": "31340627115c7d1e"
+    },
+    {
+      "repo_url": "https://github.com/n8n-io/n8n",
+      "commit": "8ab4492e8c0b743455e51fc111441d8d5010a6ad",
+      "entry_ids": [
+        "entry-00099",
+        "entry-00100"
+      ],
+      "report_ids": [
+        "GHSA-5XRP-6693-JJX9"
+      ],
+      "target_id": "4b6b7b813c7c3de6"
+    },
+    {
+      "repo_url": "https://github.com/n8n-io/n8n",
+      "commit": "8e81f3e31398b04fd6f8cc27cf844980cd382117",
+      "entry_ids": [
+        "entry-00177",
+        "entry-00178",
+        "entry-00179",
+        "entry-00180",
+        "entry-00181",
+        "entry-00182",
+        "entry-00183",
+        "entry-00184"
+      ],
+      "report_ids": [
+        "GHSA-VPCF-GVG4-6QWR",
+        "GHSA-WXX7-MCGF-J869"
+      ],
+      "target_id": "4367e182a503c531"
+    },
+    {
+      "repo_url": "https://github.com/n8n-io/n8n",
+      "commit": "911d3771ce23dda2eb00a9d2c446e37f8223a9e9",
+      "entry_ids": [
+        "entry-00104",
+        "entry-00105",
+        "entry-00106"
+      ],
+      "report_ids": [
+        "GHSA-GFVG-QV54-R4PC"
+      ],
+      "target_id": "1a0fc8652239616b"
+    },
+    {
+      "repo_url": "https://github.com/n8n-io/n8n",
+      "commit": "e45a4b1073d85d04d6455a4f18482838a7840124",
+      "entry_ids": [
+        "entry-00087"
+      ],
+      "report_ids": [
+        "GHSA-V4PR-FM98-W9PG"
+      ],
+      "target_id": "37c491f1a62bbc42"
+    },
+    {
+      "repo_url": "https://github.com/n8n-io/n8n",
+      "commit": "e7d95055d1ab260ae91f8ba358310211476bd677",
+      "entry_ids": [
+        "entry-00090",
+        "entry-00091"
+      ],
+      "report_ids": [
+        "GHSA-J4P8-H8MH-RH8Q"
+      ],
+      "target_id": "09b7af674da6c53e"
+    },
+    {
+      "repo_url": "https://github.com/n8n-io/n8n",
+      "commit": "ef9e32b27a784d88c034cfe6fb1f25cca2e9bbd3",
+      "entry_ids": [
+        "entry-00349",
+        "entry-00350"
+      ],
+      "report_ids": [
+        "GHSA-58QR-RCGV-642V"
+      ],
+      "target_id": "dcc9f2c4df3e2458"
+    },
+    {
+      "repo_url": "https://github.com/nltk/nltk",
+      "commit": "40d0bc1d484a3458d6a63ecb5ba4957ab16ba14e",
+      "entry_ids": [
+        "entry-00319"
+      ],
+      "report_ids": [
+        "GHSA-JM6W-M3J8-898G"
+      ],
+      "target_id": "407d9b83ddef0a76"
+    },
+    {
+      "repo_url": "https://github.com/ollama/ollama",
+      "commit": "7325791599409de52534429897481918717a9e85",
+      "entry_ids": [
+        "entry-00074",
+        "entry-00075",
+        "entry-00076",
+        "entry-00077",
+        "entry-00078",
+        "entry-00079"
+      ],
+      "report_ids": [
+        "GHSA-F6MR-38G8-39RG"
+      ],
+      "target_id": "16eefbc2d8dc10ba"
+    },
+    {
+      "repo_url": "https://github.com/onnx/onnx",
+      "commit": "bca0315ff3e56bb5847509ca32fadb8d87f680e1",
+      "entry_ids": [
+        "entry-00462",
+        "entry-00463"
+      ],
+      "report_ids": [
+        "GHSA-Q56X-G2FJ-4RJ6"
+      ],
+      "target_id": "94dc976d71c54bb0"
+    },
+    {
+      "repo_url": "https://github.com/open-webui/open-webui",
+      "commit": "1ac3dd4a893e13803e7b889611303c4a7a5cc470",
+      "entry_ids": [
+        "entry-00376"
+      ],
+      "report_ids": [
+        "GHSA-JJP7-G2JW-WH3J"
+      ],
+      "target_id": "03bb168d9bc57d5b"
+    },
+    {
+      "repo_url": "https://github.com/open-webui/open-webui",
+      "commit": "6cdb13d5cb26b7bceebfe0b85723d8a61aebae3b",
+      "entry_ids": [
+        "entry-00062"
+      ],
+      "report_ids": [
+        "GHSA-C6XV-RCVW-V685"
+      ],
+      "target_id": "c51b41d44a2698c8"
+    },
+    {
+      "repo_url": "https://github.com/open-webui/open-webui",
+      "commit": "9942de8011d4b5a141ac507c974c061c0cdad59a",
+      "entry_ids": [
+        "entry-00057"
+      ],
+      "report_ids": [
+        "GHSA-W7XJ-8FX7-WFCH"
+      ],
+      "target_id": "75cb54719738c566"
+    },
+    {
+      "repo_url": "https://github.com/open-webui/open-webui",
+      "commit": "e4e69a10ec08a725bf2ab3db499ef664f2bd7570",
+      "entry_ids": [
+        "entry-00401"
+      ],
+      "report_ids": [
+        "GHSA-7429-HXCV-268M"
+      ],
+      "target_id": "cb6fa8f6fa3e1fb1"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "041c47419f5a821fd4adcd46dfc7d85a7eda340e",
+      "entry_ids": [
+        "entry-00362",
+        "entry-00363"
+      ],
+      "report_ids": [
+        "GHSA-WQ58-2PVG-5H4F"
+      ],
+      "target_id": "f860392439972f17"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "04e103d10ef7601b05fe1e253a1576d093dfdcf2",
+      "entry_ids": [
+        "entry-00291"
+      ],
+      "report_ids": [
+        "GHSA-4JPW-HJ22-2XMC"
+      ],
+      "target_id": "0689e0ba674d8ca1"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "0a105c0900de701d2ee9f1abc96b017afbd0afdd",
+      "entry_ids": [
+        "entry-00505"
+      ],
+      "report_ids": [
+        "GHSA-2CQ5-MF3V-MX44"
+      ],
+      "target_id": "f1f6a0af124fe4e2"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "12dc299cdef3759486b52033e78b550d985c3371",
+      "entry_ids": [
+        "entry-00304",
+        "entry-00305",
+        "entry-00306",
+        "entry-00307"
+      ],
+      "report_ids": [
+        "GHSA-WCXR-59V9-RXR8"
+      ],
+      "target_id": "fba2b3df0c22fcdf"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "132e45900904fc981e6ef04259eb37c72f6c165d",
+      "entry_ids": [
+        "entry-00371"
+      ],
+      "report_ids": [
+        "GHSA-HF68-49FM-59CQ"
+      ],
+      "target_id": "02843d6856252bd3"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "1636f7ff5fd78afc1bd7bc80a7970478d0821138",
+      "entry_ids": [
+        "entry-00198"
+      ],
+      "report_ids": [
+        "GHSA-Q399-23R3-HFX4"
+      ],
+      "target_id": "57f4bae907bb3ae6"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "19d91aaa8f93587ea086c0b9b4673d9b7b874f74",
+      "entry_ids": [
+        "entry-00379",
+        "entry-00380"
+      ],
+      "report_ids": [
+        "GHSA-FQW4-MPH7-2VR8"
+      ],
+      "target_id": "a26f75520bc46539"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "1c1fe8a4059102fef6e738d6ec3b096c7eb5ae19",
+      "entry_ids": [
+        "entry-00500"
+      ],
+      "report_ids": [
+        "GHSA-7JP6-R74R-995Q"
+      ],
+      "target_id": "565931e216a03089"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "1f14c8d96b8662e155d5c10ea650da868e1a9e63",
+      "entry_ids": [
+        "entry-00501",
+        "entry-00502",
+        "entry-00503",
+        "entry-00504"
+      ],
+      "report_ids": [
+        "GHSA-XH72-V6V9-MWHC"
+      ],
+      "target_id": "70e402e2530d39c8"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "204d9fb404838221df19cc46b30e4cf53209d038",
+      "entry_ids": [
+        "entry-00245",
+        "entry-00246",
+        "entry-00247",
+        "entry-00248"
+      ],
+      "report_ids": [
+        "GHSA-7FF8-XJH3-MGH6"
+      ],
+      "target_id": "6e2d6a3a20780cfa"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "21a679e567365a839fb83519916c34d1aa4d3257",
+      "entry_ids": [
+        "entry-00378"
+      ],
+      "report_ids": [
+        "GHSA-QM2M-28PF-HGJW"
+      ],
+      "target_id": "42ce8c8f3510cef2"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "223d7dc23d73bdddd7d221d7ddbecafe5d03bfcb",
+      "entry_ids": [
+        "entry-00251",
+        "entry-00252"
+      ],
+      "report_ids": [
+        "GHSA-2CH6-X3G4-7759"
+      ],
+      "target_id": "5d7467fe54985099"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "233483d2b913038592c863785e1bc815336a5b69",
+      "entry_ids": [
+        "entry-00207"
+      ],
+      "report_ids": [
+        "GHSA-GV46-4XFQ-JV58"
+      ],
+      "target_id": "d73cb1eb1d2182bf"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "270ab03e379f9653e15f7033c9830399b66b7e51",
+      "entry_ids": [
+        "entry-00318"
+      ],
+      "report_ids": [
+        "GHSA-JQPF-VJ28-9V7R"
+      ],
+      "target_id": "b5a3caca26692fd2"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "2e23d44491c621e293925c8a624f6c50c1b762fe",
+      "entry_ids": [
+        "entry-00385",
+        "entry-00386"
+      ],
+      "report_ids": [
+        "GHSA-F275-5H5C-5WG5"
+      ],
+      "target_id": "de71e84dd34faebd"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "37a138c554c32abc25347388e68882f787e879f9",
+      "entry_ids": [
+        "entry-00219",
+        "entry-00220",
+        "entry-00221"
+      ],
+      "report_ids": [
+        "GHSA-MWXV-35WR-4VVJ"
+      ],
+      "target_id": "4673481ceb6c0f0a"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "3a93a7bb1e47070a010cc190d005daa2ada8f0e5",
+      "entry_ids": [
+        "entry-00187",
+        "entry-00188"
+      ],
+      "report_ids": [
+        "GHSA-VPJ2-69HF-RPPW"
+      ],
+      "target_id": "39ad7c69e8a68cd2"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "3b56a6252bbc4dcf3d3c68a5e3cbb0e1162e58a9",
+      "entry_ids": [
+        "entry-00158",
+        "entry-00159",
+        "entry-00160",
+        "entry-00161",
+        "entry-00162",
+        "entry-00163",
+        "entry-00164",
+        "entry-00165",
+        "entry-00166",
+        "entry-00167"
+      ],
+      "report_ids": [
+        "GHSA-H9G4-589H-68XV"
+      ],
+      "target_id": "24aa8a11ee319e52"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "3ba64916599b57978c42aafd2857d4e4fdb44d9c",
+      "entry_ids": [
+        "entry-00292",
+        "entry-00293"
+      ],
+      "report_ids": [
+        "GHSA-4W7M-58CG-CMFF"
+      ],
+      "target_id": "7a1e34b5224ab868"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "3caab9260cb0a0064e6a37b2de3bedc8a547e599",
+      "entry_ids": [
+        "entry-00301",
+        "entry-00302"
+      ],
+      "report_ids": [
+        "GHSA-MJ4P-RC52-M843"
+      ],
+      "target_id": "d85c1f84579e2ebe"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "3eb6a31b6fcf8268456988bfa8e3637d373438c2",
+      "entry_ids": [
+        "entry-00122",
+        "entry-00123",
+        "entry-00124"
+      ],
+      "report_ids": [
+        "GHSA-64QX-VPXX-MVQF"
+      ],
+      "target_id": "2b0f8fabf319399c"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "3fd5d13315f6e3cd850315160497f0017c7effac",
+      "entry_ids": [
+        "entry-00417",
+        "entry-00418"
+      ],
+      "report_ids": [
+        "GHSA-H5HG-H7RR-GPF3"
+      ],
+      "target_id": "08795d2b4cae7cd4"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "42d2a6188864a9c114209e35b8ea3c192792667c",
+      "entry_ids": [
+        "entry-00240"
+      ],
+      "report_ids": [
+        "GHSA-G75X-8QQM-2VXP"
+      ],
+      "target_id": "56248ea840ec7127"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "4320cde91d9574d65dd240f8b033463cc723d6a6",
+      "entry_ids": [
+        "entry-00194",
+        "entry-00195",
+        "entry-00196",
+        "entry-00197"
+      ],
+      "report_ids": [
+        "GHSA-7XMQ-G46G-F8PV"
+      ],
+      "target_id": "d7ef632b5fbfa356"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "44270c533b09e8d7e87fbeecc0b1c69a6ee98452",
+      "entry_ids": [
+        "entry-00224",
+        "entry-00225"
+      ],
+      "report_ids": [
+        "GHSA-V865-P3GQ-HW6M"
+      ],
+      "target_id": "cefd7475f78d6813"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "4580d585ffa43d8b3fc2b71ead902f07db38f513",
+      "entry_ids": [
+        "entry-00459"
+      ],
+      "report_ids": [
+        "GHSA-GG9V-MGCP-V6M7"
+      ],
+      "target_id": "3eaa57f37755dfcb"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "46a332385d1130ec128a1351418a9ab698dfabf4",
+      "entry_ids": [
+        "entry-00303"
+      ],
+      "report_ids": [
+        "GHSA-VMHQ-CQM9-6P7Q"
+      ],
+      "target_id": "d35ff096b19dad0d"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "4797bbc5b96e2cca5532e43b58915c051746fe37",
+      "entry_ids": [
+        "entry-00383",
+        "entry-00384"
+      ],
+      "report_ids": [
+        "GHSA-XP9R-PRPG-373R"
+      ],
+      "target_id": "1fc6fcf4d0282a2d"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "48c0acc26f177be2b508c104429ff3badb5aaec8",
+      "entry_ids": [
+        "entry-00249",
+        "entry-00250"
+      ],
+      "report_ids": [
+        "GHSA-JJ82-76V6-933R"
+      ],
+      "target_id": "3a51893edcce67e7"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "4adfe800276f1eacd2e0af79db34af1267d6c7ec",
+      "entry_ids": [
+        "entry-00322",
+        "entry-00323"
+      ],
+      "report_ids": [
+        "GHSA-PFV5-RPCW-X34X"
+      ],
+      "target_id": "430bb48f9222fcb1"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "4d5f762b7dcb6de8f0d002d29c74bd4b013aa2db",
+      "entry_ids": [
+        "entry-00407",
+        "entry-00408"
+      ],
+      "report_ids": [
+        "GHSA-V3QC-WRWX-J3PW"
+      ],
+      "target_id": "7c23403716e8ba8d"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "54513f4240661eb2e1bec49fbea1b7eb009a863e",
+      "entry_ids": [
+        "entry-00125",
+        "entry-00126"
+      ],
+      "report_ids": [
+        "GHSA-HV93-R4J3-Q65F"
+      ],
+      "target_id": "afa48d0f1a14fab0"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "55cd272fe1a6822ec9be91022a257f195fe1639a",
+      "entry_ids": [
+        "entry-00398",
+        "entry-00399"
+      ],
+      "report_ids": [
+        "GHSA-5H2W-QMFP-GGP6"
+      ],
+      "target_id": "31b6b1b5d79e780c"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "55f47e5ce658bf3bdcb3eac3a2a5b4ed4aa9f5ce",
+      "entry_ids": [
+        "entry-00308",
+        "entry-00309"
+      ],
+      "report_ids": [
+        "GHSA-RQPP-RJJ8-7WV8"
+      ],
+      "target_id": "6250cc4e463ae4c4"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "561acd16751c4062bb1c09c559cf63d1df9d3560",
+      "entry_ids": [
+        "entry-00387",
+        "entry-00388"
+      ],
+      "report_ids": [
+        "GHSA-94PW-C6M8-P9P9"
+      ],
+      "target_id": "a41e975cd6790ef6"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "566fb73d9da2d73c0be0d9b8e5b762e4dcd8e81d",
+      "entry_ids": [
+        "entry-00458"
+      ],
+      "report_ids": [
+        "GHSA-G374-MGGX-P6XC"
+      ],
+      "target_id": "58b51106706bea79"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "5cc631cc9cd14b123918c673f1580a35b78d16ff",
+      "entry_ids": [
+        "entry-00208",
+        "entry-00209"
+      ],
+      "report_ids": [
+        "GHSA-5V6X-RFC3-7QFR"
+      ],
+      "target_id": "01184399d774f9b7"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "5e1bfb2ce2b73a27d04e03c5049910753f09aa3f",
+      "entry_ids": [
+        "entry-00253",
+        "entry-00254",
+        "entry-00255"
+      ],
+      "report_ids": [
+        "GHSA-X2FF-J5C2-GGPR"
+      ],
+      "target_id": "df18a4006c28c260"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "5e8cb22176e9235e224be0bc530699261eb60e53",
+      "entry_ids": [
+        "entry-00513"
+      ],
+      "report_ids": [
+        "GHSA-Q2QC-744P-66R2"
+      ],
+      "target_id": "794539209cffe733"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "611dff985d4ecc442633a740f0918d9eb5c6bf36",
+      "entry_ids": [
+        "entry-00210",
+        "entry-00211"
+      ],
+      "report_ids": [
+        "GHSA-F7WW-2725-QVW2"
+      ],
+      "target_id": "9f0da61dafe0ef8b"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "65b781f9ae3a0d0463dda4b4c6710d8f0b3a2bad",
+      "entry_ids": [
+        "entry-00493",
+        "entry-00494",
+        "entry-00495"
+      ],
+      "report_ids": [
+        "GHSA-82QX-6VJ7-P8M2"
+      ],
+      "target_id": "27943db48607640e"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "66d8117d4483df542d450b9f4bb6dd2a2b769046",
+      "entry_ids": [
+        "entry-00147"
+      ],
+      "report_ids": [
+        "GHSA-MQPW-46FH-299H"
+      ],
+      "target_id": "fddc21cf887d32ca"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "67ae576b9e8713bbc4aec24f2b325ad8bc84e787",
+      "entry_ids": [
+        "entry-00498",
+        "entry-00499"
+      ],
+      "report_ids": [
+        "GHSA-525J-HQQ2-66R4"
+      ],
+      "target_id": "4cd482b0b5b53682"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "6a1eedf10b1b1cbdd25a2d6c8cc24b06b303ebd1",
+      "entry_ids": [
+        "entry-00327"
+      ],
+      "report_ids": [
+        "GHSA-WR92-6W3G-2HWC"
+      ],
+      "target_id": "a44848e6a5d7fb16"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "6aa11f30924ee08d0e6f36ede4877e44c553b984",
+      "entry_ids": [
+        "entry-00328",
+        "entry-00329",
+        "entry-00330",
+        "entry-00331"
+      ],
+      "report_ids": [
+        "GHSA-QWMF-95R9-GX9X"
+      ],
+      "target_id": "5ab93b0652f1b8fa"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "6b38815f86d8d58e29745fe212d95650e13a936c",
+      "entry_ids": [
+        "entry-00409"
+      ],
+      "report_ids": [
+        "GHSA-XJ9W-5R6Q-X6V4"
+      ],
+      "target_id": "454bac6caa851b73"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "6cb7e16d400366602e0bd0e0ac04898b86232782",
+      "entry_ids": [
+        "entry-00222",
+        "entry-00223"
+      ],
+      "report_ids": [
+        "GHSA-25GX-X37C-7PPH"
+      ],
+      "target_id": "ca187163abbfeee0"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "71f357d9498cebb0efe016b0496d5fbe807539fc",
+      "entry_ids": [
+        "entry-00146"
+      ],
+      "report_ids": [
+        "GHSA-H3F9-MJWJ-W476"
+      ],
+      "target_id": "ce3ecd239a7a75ff"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "777c6f7580918e6711c4457cbd91161cbaefe311",
+      "entry_ids": [
+        "entry-00496",
+        "entry-00497"
+      ],
+      "report_ids": [
+        "GHSA-736R-JWJ6-4W23"
+      ],
+      "target_id": "c641ad2d3d96a2f4"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "7ae1bb0c7799fd0cbd2d4de7b0f5b8039837ab8d",
+      "entry_ids": [
+        "entry-00410"
+      ],
+      "report_ids": [
+        "GHSA-9P3R-HH9G-5CMG"
+      ],
+      "target_id": "182b40301e0beed6"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "7b4d2cb5cb8cc971e5eee880a489c227bda375fb",
+      "entry_ids": [
+        "entry-00232"
+      ],
+      "report_ids": [
+        "GHSA-3C6H-G97W-FG78"
+      ],
+      "target_id": "e5acb6dd32888c4e"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "7ce2670043dbb29aa18cb123c04be4b5097b16cb",
+      "entry_ids": [
+        "entry-00402",
+        "entry-00403",
+        "entry-00404",
+        "entry-00405"
+      ],
+      "report_ids": [
+        "GHSA-P4X4-2R7F-WJXG"
+      ],
+      "target_id": "0b10355c58a178f5"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "7d4078c7043da9109c7fdba662254a7f9204aea9",
+      "entry_ids": [
+        "entry-00149"
+      ],
+      "report_ids": [
+        "GHSA-V773-R54F-Q32W"
+      ],
+      "target_id": "405b75552474ab73"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "83da3cfe31f016841e1deedda1a604696f4c488d",
+      "entry_ids": [
+        "entry-00450",
+        "entry-00451"
+      ],
+      "report_ids": [
+        "GHSA-6XG4-82HV-CP6F"
+      ],
+      "target_id": "a6f91bf80e140380"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "861718e4dcbd33354b87b84bf5df8c9d92d21307",
+      "entry_ids": [
+        "entry-00233"
+      ],
+      "report_ids": [
+        "GHSA-9P38-94JF-HGJJ"
+      ],
+      "target_id": "22758c9d47c4e1a0"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "8dd60fc7d9efb86557ddb249d9b25cbb1ef2d397",
+      "entry_ids": [
+        "entry-00129",
+        "entry-00134"
+      ],
+      "report_ids": [
+        "GHSA-PCHC-86F6-8758",
+        "GHSA-XC7W-V5X6-CC87"
+      ],
+      "target_id": "a992d5b252cf90bc"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "8eac9394170e2218a55fab774c310ff9bcaad19f",
+      "entry_ids": [
+        "entry-00295"
+      ],
+      "report_ids": [
+        "GHSA-RW39-5899-8MXP"
+      ],
+      "target_id": "b73018f536a2ae8e"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "91f7a6b0fd67b703897e6e307762d471ca09333d",
+      "entry_ids": [
+        "entry-00406"
+      ],
+      "report_ids": [
+        "GHSA-G5CG-8X5W-7JPM"
+      ],
+      "target_id": "16d0a91e74d58118"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "93ab2ac69d25521f285c8c0489b330342980af22",
+      "entry_ids": [
+        "entry-00424"
+      ],
+      "report_ids": [
+        "GHSA-5WJ5-87VQ-39XM"
+      ],
+      "target_id": "ef3f177d6b47ddd6"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "99170e2408682819c00e54aa2a3e5928a583838f",
+      "entry_ids": [
+        "entry-00509",
+        "entry-00510"
+      ],
+      "report_ids": [
+        "GHSA-VJQW-W5JR-G9W5"
+      ],
+      "target_id": "e91b6521f398ba3f"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "9d5c5230c569fac6c0633dcd0d0b4bfb8736bf69",
+      "entry_ids": [
+        "entry-00411",
+        "entry-00412"
+      ],
+      "report_ids": [
+        "GHSA-GJM7-HW8F-73RQ"
+      ],
+      "target_id": "5620f50317e85817"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "9dce3d8bf83f13c067bc3c32291643d2f1f10a06",
+      "entry_ids": [
+        "entry-00148"
+      ],
+      "report_ids": [
+        "GHSA-RQ6G-PX6M-C248"
+      ],
+      "target_id": "181854c2ab52128c"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "a0b9dc007823dff69832b16419c9511b321d8e1b",
+      "entry_ids": [
+        "entry-00381",
+        "entry-00382"
+      ],
+      "report_ids": [
+        "GHSA-M3MH-3MPG-37HW"
+      ],
+      "target_id": "f7cf061090d4b11a"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "a47722de7e3c9cbda8d5512747ca7e3bb8f6ee66",
+      "entry_ids": [
+        "entry-00368",
+        "entry-00369",
+        "entry-00370"
+      ],
+      "report_ids": [
+        "GHSA-3W6X-GV34-MQPF"
+      ],
+      "target_id": "b98d28f5832b8692"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "a5ceb62d4401d311a4070b80dd9d61395d26c122",
+      "entry_ids": [
+        "entry-00294",
+        "entry-00296"
+      ],
+      "report_ids": [
+        "GHSA-QC36-X95H-7J53",
+        "GHSA-XF99-J42Q-5W5P"
+      ],
+      "target_id": "2fa5bf4218e9a0bf"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "a78ec81ae6016bbe2bd1d8824cbffb7518a47c10",
+      "entry_ids": [
+        "entry-00227",
+        "entry-00228"
+      ],
+      "report_ids": [
+        "GHSA-474H-PRJG-MMW3"
+      ],
+      "target_id": "53a586dbd81791d3"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "a94ec3b79be9c8ee2cfd2e7a31067e94debc1912",
+      "entry_ids": [
+        "entry-00364",
+        "entry-00365"
+      ],
+      "report_ids": [
+        "GHSA-65H8-27JH-Q8WV"
+      ],
+      "target_id": "c0d002908dc11cc5"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "aa2eb48b9c0fe63aa7b8be6329869d3a2539c446",
+      "entry_ids": [
+        "entry-00142"
+      ],
+      "report_ids": [
+        "GHSA-33RQ-M5X2-FVGF"
+      ],
+      "target_id": "88a0e4a18e9db672"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "aa66ae1fc797d3298cc409ed2c5da69a89950a45",
+      "entry_ids": [
+        "entry-00400"
+      ],
+      "report_ids": [
+        "GHSA-5R8F-96GM-5J6G"
+      ],
+      "target_id": "99f130d1bee53c41"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "ae1a1fccfeac598a747a9b4a6c9871c93061229c",
+      "entry_ids": [
+        "entry-00312"
+      ],
+      "report_ids": [
+        "GHSA-63F5-HHC7-CX6P"
+      ],
+      "target_id": "a285b6d4d5a6a504"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "b5d785f1a59a56c3471f2cef328f7c9a6c15f3e7",
+      "entry_ids": [
+        "entry-00377"
+      ],
+      "report_ids": [
+        "GHSA-9HJH-FR4F-GXC4"
+      ],
+      "target_id": "e19088c1dbf187a0"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "bbe9cb30224af989782d42d6de8e8053abaee51b",
+      "entry_ids": [
+        "entry-00140",
+        "entry-00141"
+      ],
+      "report_ids": [
+        "GHSA-R5H9-VJQC-HQ3R"
+      ],
+      "target_id": "fd46ff317eed2e63"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "bc507080577c620243617e8fadd294bec3efa252",
+      "entry_ids": [
+        "entry-00192",
+        "entry-00193",
+        "entry-00199",
+        "entry-00200",
+        "entry-00201",
+        "entry-00202"
+      ],
+      "report_ids": [
+        "GHSA-JR6X-2Q95-FH2G",
+        "GHSA-X82F-27X3-Q89C"
+      ],
+      "target_id": "f3cea1a68def8baa"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "be00fcfccba108f88dc3d4380146c6e058770b03",
+      "entry_ids": [
+        "entry-00396",
+        "entry-00397"
+      ],
+      "report_ids": [
+        "GHSA-98HH-7GHG-X6RQ"
+      ],
+      "target_id": "5dfe105f2874ecb8"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "be37b39782e0799ba5b9533561de6d128d50c863",
+      "entry_ids": [
+        "entry-00116"
+      ],
+      "report_ids": [
+        "GHSA-G55J-C2V4-PJCG"
+      ],
+      "target_id": "2301675b17e53dd1"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "c070be1bc4d0d25f2be1c0d1ff0702fb5fc56efd",
+      "entry_ids": [
+        "entry-00229",
+        "entry-00230"
+      ],
+      "report_ids": [
+        "GHSA-H9XM-J4QG-FVPG"
+      ],
+      "target_id": "461f6df3adb4fdc4"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "c3680c227798263fea3a8178ee53d9d388e19d94",
+      "entry_ids": [
+        "entry-00215"
+      ],
+      "report_ids": [
+        "GHSA-9F72-QCPW-2HXC"
+      ],
+      "target_id": "d4a95cac1da94e91"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "c45f3c5b004c8d63dc0e282e2176f8c9355d24f1",
+      "entry_ids": [
+        "entry-00231"
+      ],
+      "report_ids": [
+        "GHSA-PJ5X-38RW-6FPH"
+      ],
+      "target_id": "a85a59be113bde9d"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "c56fb7f353d63d6ea97028ee7d8a97bc4edf21c1",
+      "entry_ids": [
+        "entry-00241",
+        "entry-00242",
+        "entry-00243",
+        "entry-00244"
+      ],
+      "report_ids": [
+        "GHSA-W7J5-J98M-W679"
+      ],
+      "target_id": "c1bceb84ae6ab7af"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "c6dfa26f037977b82e91648bee47d99360d604d4",
+      "entry_ids": [
+        "entry-00212"
+      ],
+      "report_ids": [
+        "GHSA-QJ22-XQJR-V83V"
+      ],
+      "target_id": "bdbdadbe37d76335"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "c9d68fb9c2e6e11f9aa311d1ffc81d64659b2ca2",
+      "entry_ids": [
+        "entry-00393"
+      ],
+      "report_ids": [
+        "GHSA-3CW3-5VXW-G2H3"
+      ],
+      "target_id": "e4f365c779a77301"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "cf311978ea6117256659f29c902a7a441f63def3",
+      "entry_ids": [
+        "entry-00213",
+        "entry-00214"
+      ],
+      "report_ids": [
+        "GHSA-R65X-2HQR-J5HF"
+      ],
+      "target_id": "daddd09a5f50b187"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "d08dafb08fee1e36ef929d6ccfdc322fdf52cee6",
+      "entry_ids": [
+        "entry-00216",
+        "entry-00217",
+        "entry-00218",
+        "entry-00283",
+        "entry-00284",
+        "entry-00285"
+      ],
+      "report_ids": [
+        "GHSA-GP3Q-WPQ4-5C5H",
+        "GHSA-JV6R-27WW-4GW4"
+      ],
+      "target_id": "f9fad43e8579ace4"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "d1ecb46076145deb188abcba8f0699709ea17198",
+      "entry_ids": [
+        "entry-00121"
+      ],
+      "report_ids": [
+        "GHSA-RV39-79C4-7459"
+      ],
+      "target_id": "3c839246b3973b82"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "d4bdcda32403cb8d1f100ae9e27a82f0ffaa04ca",
+      "entry_ids": [
+        "entry-00168",
+        "entry-00169",
+        "entry-00170"
+      ],
+      "report_ids": [
+        "GHSA-W235-X559-36MG"
+      ],
+      "target_id": "88f3ed9635f889d6"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "dafd61b5c19fb7df3e34157f4bc8f9c24bffd91f",
+      "entry_ids": [
+        "entry-00286",
+        "entry-00287",
+        "entry-00288",
+        "entry-00289"
+      ],
+      "report_ids": [
+        "GHSA-XW77-45GV-P728"
+      ],
+      "target_id": "1e9dd3da7c8adeb6"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "e4f7155369e0789a95836cd77d6452848f98f804",
+      "entry_ids": [
+        "entry-00127",
+        "entry-00128"
+      ],
+      "report_ids": [
+        "GHSA-MR32-VWC2-5J6H"
+      ],
+      "target_id": "85cd83f5d00b29d7"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "eb35fb745de55194ab39b124de12c4ecbf24597e",
+      "entry_ids": [
+        "entry-00226"
+      ],
+      "report_ids": [
+        "GHSA-R54R-WMMQ-MH84"
+      ],
+      "target_id": "dad041ef3dbab875"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "ecb2053fdd3fb5c06a0133e844b75c8580fcccd3",
+      "entry_ids": [
+        "entry-00290"
+      ],
+      "report_ids": [
+        "GHSA-QCC4-P59M-P54M"
+      ],
+      "target_id": "120451d30c75d9c5"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "f29c1206cde7121f3632d6bc3386ab9e92263bde",
+      "entry_ids": [
+        "entry-00375"
+      ],
+      "report_ids": [
+        "GHSA-9P93-7J67-5PC2"
+      ],
+      "target_id": "502cd109c321ce90"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "f76f98b26896a7b01f3b2335bb34618c13655b10",
+      "entry_ids": [
+        "entry-00256",
+        "entry-00257"
+      ],
+      "report_ids": [
+        "GHSA-VVJH-F6P9-5VCF"
+      ],
+      "target_id": "2ccab0c7d6159850"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "f8c404a4852170147aa3d1a0e8a70c6bdf79ecb7",
+      "entry_ids": [
+        "entry-00130",
+        "entry-00131",
+        "entry-00132",
+        "entry-00133"
+      ],
+      "report_ids": [
+        "GHSA-MP5H-M6QJ-6292"
+      ],
+      "target_id": "c60d5772904f3b67"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "fa4b28d7af7464b07271bfef6c028e4135548f44",
+      "entry_ids": [
+        "entry-00135",
+        "entry-00136",
+        "entry-00137"
+      ],
+      "report_ids": [
+        "GHSA-3M3Q-X3GJ-F79X"
+      ],
+      "target_id": "63a1f4bca99ebcd5"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "fc40ba8e7eb1345afdb1c8d274219cd702b73354",
+      "entry_ids": [
+        "entry-00143",
+        "entry-00144"
+      ],
+      "report_ids": [
+        "GHSA-4RJ2-GPMH-QQ5X"
+      ],
+      "target_id": "0e8aaac1e8c41b2b"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "fda49658183dc1afee48143f4de47dedc7590966",
+      "entry_ids": [
+        "entry-00297",
+        "entry-00298",
+        "entry-00299",
+        "entry-00300"
+      ],
+      "report_ids": [
+        "GHSA-R7VR-GR74-94P8"
+      ],
+      "target_id": "c1869c1255a0e12a"
+    },
+    {
+      "repo_url": "https://github.com/openclaw/openclaw",
+      "commit": "ff11d8793b90c52f8d84dae3fbb99307da51b5c9",
+      "entry_ids": [
+        "entry-00145"
+      ],
+      "report_ids": [
+        "GHSA-4HG8-92X6-H2F3"
+      ],
+      "target_id": "0e156cc76eb82abe"
+    },
+    {
+      "repo_url": "https://github.com/paperclipai/paperclip",
+      "commit": "50cd76d8a3f2fc06d1a5af63840abd3d7a1bcd02",
+      "entry_ids": [
+        "entry-00437",
+        "entry-00438",
+        "entry-00439",
+        "entry-00440",
+        "entry-00441",
+        "entry-00442",
+        "entry-00443",
+        "entry-00446"
+      ],
+      "report_ids": [
+        "GHSA-265W-RF2W-CJH4",
+        "GHSA-VR7G-88FQ-VHQ3",
+        "GHSA-XFQJ-R5QW-8G4J"
+      ],
+      "target_id": "942ebe0ecd246c9c"
+    },
+    {
+      "repo_url": "https://github.com/paperclipai/paperclip",
+      "commit": "549ef11c14b2b05f89220e80cecc41e78be95439",
+      "entry_ids": [
+        "entry-00447",
+        "entry-00448",
+        "entry-00449"
+      ],
+      "report_ids": [
+        "GHSA-47WQ-CJ9Q-WPMP"
+      ],
+      "target_id": "8865e70c3a3d3ca7"
+    },
+    {
+      "repo_url": "https://github.com/paperclipai/paperclip",
+      "commit": "a07237779bd5391a4683a754ed95249d57a49b2c",
+      "entry_ids": [
+        "entry-00483",
+        "entry-00484",
+        "entry-00485",
+        "entry-00486",
+        "entry-00487",
+        "entry-00488"
+      ],
+      "report_ids": [
+        "GHSA-3XX2-MQJM-HG9X"
+      ],
+      "target_id": "7bb2cc30978b23f8"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "model_name": "qwen38-27b-fp8",
+  "model_dir": "/scratch/mkhan04/qwen38-vllm/models/Qwen3.8-27B-FP8",
+  "base_url": "http://127.0.0.1:8001/v1",
+  "tokenizer_python": "/scratch/mkhan04/qwen38-vllm/vllm-env/bin/python",
+  "context_limit": 262144
+}

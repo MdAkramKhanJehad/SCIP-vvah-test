@@ -1,0 +1,104 @@
+models:
+  autoexclude:
+    id: vulnllm-r-7b
+    via: deepagents
+    provider: openai
+    use_responses_api: false
+  preprocess:
+    id: vulnllm-r-7b
+    via: deepagents
+    provider: openai
+    use_responses_api: false
+  threatmodel:
+    id: vulnllm-r-7b
+    via: deepagents
+    provider: openai
+    use_responses_api: false
+  decompose:
+    id: vulnllm-r-7b
+    via: deepagents
+    provider: openai
+    use_responses_api: false
+  deepdive:
+    id: vulnllm-r-7b
+    via: deepagents
+    provider: openai
+    use_responses_api: false
+  verify:
+    id: vulnllm-r-7b
+    via: deepagents
+    provider: openai
+    use_responses_api: false
+  dedup:
+    id: vulnllm-r-7b
+    via: deepagents
+    provider: openai
+    use_responses_api: false
+  chain:
+    id: vulnllm-r-7b
+    via: deepagents
+    provider: openai
+    use_responses_api: false
+  remediate:
+    id: vulnllm-r-7b
+    via: deepagents
+    provider: openai
+    use_responses_api: false
+  validate:
+    orchestrator:
+      id: vulnllm-r-7b
+      via: deepagents
+      provider: openai
+      use_responses_api: false
+    security_architect:
+      id: vulnllm-r-7b
+      via: deepagents
+      provider: openai
+      use_responses_api: false
+    penetration_tester:
+      id: vulnllm-r-7b
+      via: deepagents
+      provider: openai
+      use_responses_api: false
+    cross_repo_analyzer:
+      id: vulnllm-r-7b
+      via: deepagents
+      provider: openai
+      use_responses_api: false
+  exploit_verification:
+    attacker:
+      id: vulnllm-r-7b
+      via: deepagents
+      provider: openai
+      use_responses_api: false
+    judge:
+      id: vulnllm-r-7b
+      via: deepagents
+      provider: openai
+      use_responses_api: false
+    classify:
+      id: vulnllm-r-7b
+      via: deepagents
+      provider: openai
+      use_responses_api: false
+    mapper:
+      id: vulnllm-r-7b
+      via: deepagents
+      provider: openai
+      use_responses_api: false
+openai:
+  api_key: ${OPENAI_API_KEY}
+  base_url: ${OPENAI_BASE_URL}
+  no_proxy: 127.0.0.1,localhost
+sdk:
+  cache_markers: 'off'
+cache_markers: 'off'
+step6_exploit_verification:
+  enabled: false
+step_remediate:
+  enabled: false
+step_validate:
+  enabled: false
+output:
+  ingest_url: ''
+  ingest_token: ''

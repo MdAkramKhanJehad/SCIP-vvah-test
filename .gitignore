@@ -1,0 +1,29 @@
+# Local environments, caches, model weights, and generated experiment data.
+/.venv/
+/.cache/
+/targets/
+/runs/
+/local_models/
+/models/
+
+# Local tool state and credentials.
+/.agents/
+/.codex/
+/.aws/
+.env
+.env.*
+!.env.example
+!.env.exploit.example
+*.pem
+*.key
+
+# Python and editor build artifacts.
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+build/
+dist/
+.DS_Store
