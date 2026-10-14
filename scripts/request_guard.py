@@ -19,9 +19,9 @@ TOKENIZER = None
 OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 DEFAULT_SETTINGS = {
     "model_name": "vulnllm-r-7b",
-    "model_dir": "/scratch/mkhan04/local_models/vulnLLM-R-7B",
+    "model_dir": "/home/spl/akram/local_models/vulnLLM-R-7B",
     "base_url": "http://127.0.0.1:8002/v1",
-    "tokenizer_python": "/scratch/mkhan04/qwen38-vllm/vllm-env/bin/python",
+    "tokenizer_python": "/home/spl/akram/local_models/qwen38-vllm/vllm-env/bin/python",
     "context_limit": 32768,
 }
 SETTINGS = DEFAULT_SETTINGS

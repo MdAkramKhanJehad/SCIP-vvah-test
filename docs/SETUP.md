@@ -1,6 +1,6 @@
 # Run VVAH on VulnGym with a local model
 
-Work from `/scratch/mkhan04/scip`. The harness installation is `.venv`
+Work from `/home/spl/akram/SCIP-vvah-test`. The harness installation is `.venv`
 (Python 3.12.0). Existing model files and the serving environment are unchanged.
 Harness and dataset source directories have no nested Git repositories.
 `configs/upstream-revisions.json` records their commits and source checksums.
@@ -11,6 +11,22 @@ Harness and dataset source directories have no nested Git repositories.
 | VulnGym | `abfcb1aa0cb4e8719f6550b0a7b41169d7a3843f` |
 | VulnLLM-R-7B | `8cd13d7a35f13b187102dba166413d4450836a40` |
 | First target: BerriAI/litellm | `24f847b84c947e13b765edaf172f646fd1b06297` |
+
+
+Model storage is now `/home/spl/akram/local_models`: VulnLLM lives directly in
+`vulnLLM-R-7B/`, and the complete Qwen serving tree lives in `qwen38-vllm/`.
+The old `/scratch/mkhan04/local_models` and `/scratch/mkhan04/qwen38-vllm`
+locations are compatibility symlinks. Keep them while using this unchanged
+serving environment: its interpreter links, shebangs and activation files
+embed those original paths. The repository's scripts and model JSON settings
+use the new physical locations.
+
+The NFS destination does not support the source POSIX ACL metadata. Original
+Qwen ACLs were saved in
+`/home/spl/akram/local_models/qwen38-vllm.posix-acl-backup.txt`. A 24 KB remnant
+of empty `nobody`-owned cache directories could not be deleted and remains at
+`/scratch/mkhan04/.qwen38-vllm-relocation-residue`; no model weights remain there.
+No model, harness or tests were started during relocation.
 
 ## Execution settings
 
@@ -52,14 +68,14 @@ not silently shrink budgets, truncate source or extend server context.
 Terminal 1:
 
 ```bash
-cd /scratch/mkhan04/scip
+cd /home/spl/akram/SCIP-vvah-test
 bash scripts/serve_qwen_tools.sh
 ```
 
 Wait for startup to complete. Terminal 2:
 
 ```bash
-cd /scratch/mkhan04/scip
+cd /home/spl/akram/SCIP-vvah-test
 curl --noproxy '*' http://127.0.0.1:8001/v1/models
 .venv/bin/python scripts/prepare_targets.py --offset 0 --limit 1
 bash scripts/smoke.sh --model-config configs/qwen38-27b-fp8-256k.json
@@ -85,14 +101,14 @@ The temporary test server was stopped after that run. This checkpoint has no
 Terminal 1:
 
 ```bash
-cd /scratch/mkhan04/scip
+cd /home/spl/akram/SCIP-vvah-test
 bash scripts/serve_vulnLLM-R-7B_tools.sh
 ```
 
 Terminal 2:
 
 ```bash
-cd /scratch/mkhan04/scip
+cd /home/spl/akram/SCIP-vvah-test
 .venv/bin/python scripts/prepare_targets.py --limit 1
 bash scripts/smoke.sh
 ```
@@ -221,7 +237,7 @@ accuracy or F1.
 ## Installation and checks
 
 ```bash
-cd /scratch/mkhan04/scip
+cd /home/spl/akram/SCIP-vvah-test
 UV_CACHE_DIR="$PWD/.cache/uv" uv pip install \
   --python .venv/bin/python -r configs/harness-requirements.lock.txt
 cp configs/baseline.local.yaml \

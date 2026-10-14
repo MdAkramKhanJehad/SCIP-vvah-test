@@ -28,7 +28,7 @@ def main():
     env = dict(os.environ, HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1")
     proc = subprocess.Popen(
         [
-            "/scratch/mkhan04/qwen38-vllm/vllm-env/bin/python",
+            "/home/spl/akram/local_models/qwen38-vllm/vllm-env/bin/python",
             str(ROOT / "scripts/request_guard.py"),
             "--trace",
             str(run / "trace.jsonl"),
