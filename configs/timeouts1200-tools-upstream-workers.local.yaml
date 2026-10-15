@@ -1,0 +1,25 @@
+# Explicit variant: raise detection stage/session timeouts below 1200 seconds to 1200.
+# Keep the longer S8 timeout (1800), upstream S4/S6 worker counts (12/7),
+# and native tool-based source access. HTTP/preflight and token/call budgets are unchanged.
+step2:
+  deadline: 1200
+  timeout: 1200
+  resume_timeout: 1200
+  replay_timeout: 1200
+step4:
+  parallel: 12
+  inline_source: false
+  deadline: 1200
+  resume_timeout: 1200
+  replay_timeout: 1200
+step6_verify:
+  parallel: 7
+  inline_source: false
+  batch_deadline: 1200
+  batch_wall_clock_ceiling: 1200
+  resume_timeout: 1200
+  replay_timeout: 1200
+step8:
+  deadline: 1200
+  timeout: 1800
+  replay_timeout: 1200

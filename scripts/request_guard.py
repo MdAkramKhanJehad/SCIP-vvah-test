@@ -59,10 +59,19 @@ def template_messages(messages):
 
 def load_settings(path):
     settings = json.loads(pathlib.Path(path).read_text())
-    if set(settings) != set(DEFAULT_SETTINGS):
+    required = set(DEFAULT_SETTINGS)
+    if not required.issubset(settings) or set(settings) - required - {"chat_template_kwargs"}:
         raise ValueError(
-            "Model configuration must contain exactly: " + ", ".join(DEFAULT_SETTINGS)
+            "Model configuration requires: " + ", ".join(DEFAULT_SETTINGS)
+            + "; optional: chat_template_kwargs"
         )
+
+    template_kwargs = settings.get("chat_template_kwargs", {})
+    if not isinstance(template_kwargs, dict) or set(template_kwargs) - {"enable_thinking"}:
+        raise ValueError("chat_template_kwargs supports only enable_thinking")
+
+    if "enable_thinking" in template_kwargs and not isinstance(template_kwargs["enable_thinking"], bool):
+        raise ValueError("enable_thinking must be a JSON boolean")
 
     url = urllib.parse.urlsplit(settings["base_url"])
     if (
@@ -96,8 +105,19 @@ def load_settings(path):
     return settings
 
 
+def apply_model_template(data, settings):
+    configured = settings.get("chat_template_kwargs") or {}
+    if not configured:
+        return data
+
+    template_kwargs = dict(data.get("chat_template_kwargs") or {})
+    template_kwargs.update(configured)
+    return dict(data, chat_template_kwargs=template_kwargs)
+
+
 def validate(data, tokenizer, settings=None):
     settings = settings or DEFAULT_SETTINGS
+    data = apply_model_template(data, settings)
     if data.get("model") != settings["model_name"]:
         raise ValueError("Only the baseline/configured local model is permitted")
 
@@ -147,8 +167,16 @@ class Handler(BaseHTTPRequestHandler):
             body = None
             if self.command == "POST":
                 body = self.rfile.read(int(self.headers.get("Content-Length", 0)))
-                data = json.loads(body)
+                received = json.loads(body)
+                data = apply_model_template(received, SETTINGS)
                 record["request"] = data
+                if data != received:
+                    record["provider_adaptation"] = {
+                        "configured_chat_template_kwargs": SETTINGS["chat_template_kwargs"],
+                        "original_chat_template_kwargs": received.get("chat_template_kwargs"),
+                        "original_kwargs_present": "chat_template_kwargs" in received,
+                    }
+
                 count, output = validate(data, TOKENIZER, SETTINGS)
                 body = json.dumps(data).encode()
                 record.update(input_tokens=count, output_allowance=output)

@@ -13,16 +13,20 @@ import shutil
 import signal
 import socket
 import subprocess
+import sys
 import threading
 import time
+from zoneinfo import ZoneInfo
 
 import yaml
 from convert_findings import convert
 from evaluate_run import evaluate
 from request_guard import DEFAULT_SETTINGS, load_settings
+from target_claims import ClaimBusy, TargetClaim
 from vvaharness.config import load
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
+RUN_TIMEZONE = ZoneInfo("America/New_York")
 PROFILE = (
     ROOT
     / "harnesses/visa-vulnerability-agentic-harness/vvaharness/config/profiles/default.yaml"
@@ -81,7 +85,7 @@ def command(cmd, cwd, env, log):
         reader.start()
         while True:
             try:
-                code = proc.wait(timeout=30)
+                code = proc.wait(timeout=1200)
                 break
             except subprocess.TimeoutExpired:
                 elapsed = time.monotonic() - started
@@ -108,6 +112,23 @@ def command(cmd, cwd, env, log):
             f"elapsed {time.monotonic() - started:.1f}s", flush=True,
         )
         return code
+
+
+def has_unrecovered_stage_errors(report_directory):
+    for path in report_directory.glob("*_errors.jsonl"):
+        for line in path.read_text().splitlines():
+            if not line.strip():
+                continue
+
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
+                return True
+
+            if not isinstance(event, dict) or event.get("recovered") is not True:
+                return True
+
+    return False
 
 
 def failure_reason(codes):
@@ -212,26 +233,56 @@ def model_profile(run, settings, extra_overlay=None):
     return directory / "default.yaml"
 
 
-def run_target(t, settings=None, extra_overlay=None):
+def run_directory_name(target, when):
+    if when.tzinfo is None or when.utcoffset() is None:
+        raise ValueError("Run timestamps must include a timezone")
+
+    local = when.astimezone(RUN_TIMEZONE)
+    repository = "-".join(target["repo_url"].rstrip("/").removesuffix(".git").split("/")[-2:])
+    repository = re.sub(r"[^A-Za-z0-9._-]+", "-", repository)
+    return (
+        f"{local:%Y-%m-%d_%H-%M-%S}_{target['commit'][:12]}_"
+        f"{repository}_{local:%Z}"
+    )
+
+
+def create_run_directory(target, when=None):
+    when = when or datetime.datetime.now(datetime.timezone.utc)
+    base = run_directory_name(target, when)
+    parent = ROOT / "runs"
+    parent.mkdir(parents=True, exist_ok=True)
+    index = 1
+    while True:
+        name = base if index == 1 else f"{base}_{index:02d}"
+        run = parent / name
+        try:
+            run.mkdir()
+        except FileExistsError:
+            index += 1
+        else:
+            return run
+
+
+def run_target(t, settings=None, extra_overlay=None, claim=None):
     custom = settings is not None or extra_overlay is not None
     settings = dict(settings or DEFAULT_SETTINGS)
-    run = (
-        ROOT
-        / "runs"
-        / (
-            datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ")
-            + "-"
-            + t["target_id"]
-        )
-    )
-    run.mkdir(parents=True)
+    run = create_run_directory(t)
+    if claim is not None:
+        claim.update(run_directory=str(run.relative_to(ROOT)))
+
+    write(run / "execution.json", {
+        "hostname": socket.gethostname(),
+        "pid": os.getpid(),
+        "claim": claim.owner if claim is not None else None,
+    })
     write(run / "target.json", t)
     write(run / "model-config.json", settings)
     profile = model_profile(run, settings, extra_overlay) if custom else PROFILE
     effective = load(profile)
     budget_fields = {
         "max_tokens", "replay_max_tokens", "auto_exclude_max_tokens", "parallel",
-        "deadline", "timeout", "replay_timeout", "resume_timeout",
+        "deadline", "batch_deadline", "batch_wall_clock_ceiling",
+        "timeout", "replay_timeout", "resume_timeout",
         "max_model_calls", "max_turns", "prompt_token_budget",
     }
     limits = {
@@ -420,8 +471,7 @@ def run_target(t, settings=None, extra_overlay=None):
             shutil.copy2(raw, run / "raw-findings.json")
             report = json.loads(raw.read_text())
             rows, errors = convert(report, t)
-            error_artifacts = list((scan / "security-scan").glob("*_errors.jsonl"))
-            stage_errors = any(p.stat().st_size for p in error_artifacts)
+            stage_errors = has_unrecovered_stage_errors(scan / "security-scan")
             status = (
                 "completed"
                 if codes.get("scan_retry", codes["scan"]) == 0
@@ -506,20 +556,144 @@ def run_target(t, settings=None, extra_overlay=None):
     return status
 
 
+def experiment_key(settings, extra_overlay, provenance):
+    revision_path = pathlib.Path(settings["model_dir"]) / "MODEL_REVISION.txt"
+    identity = {
+        "model": settings,
+        "model_revision": revision_path.read_text().strip() if revision_path.exists() else None,
+        "upstream": {name: item["commit"] for name, item in provenance.items()},
+        "baseline": (ROOT / "configs/baseline.local.yaml").read_text(),
+        "profile": PROFILE.read_text(),
+        "overlay": extra_overlay.read_text() if extra_overlay else None,
+    }
+    return hashlib.sha256(json.dumps(identity, sort_keys=True).encode()).hexdigest()
+
+
+def completed_targets(settings, extra_overlay, provenance):
+    """Recognize completed matching runs created before shared claims existed."""
+    done = set()
+    for status_path in (ROOT / "runs").glob("*/status.json"):
+        directory = status_path.parent
+        try:
+            if json.loads(status_path.read_text())["status"] != "completed":
+                continue
+
+            if (directory / "baseline.local.yaml").read_bytes() != (ROOT / "configs/baseline.local.yaml").read_bytes():
+                continue
+
+            revisions = json.loads((directory / "revisions.json").read_text())
+            if any(revisions.get(name) != item["commit"] for name, item in provenance.items()):
+                continue
+
+            if json.loads((directory / "model-config.json").read_text()) != settings:
+                continue
+
+            revision_path = pathlib.Path(settings["model_dir"]) / "MODEL_REVISION.txt"
+            model_revision = revision_path.read_text().strip() if revision_path.exists() else None
+            if revisions.get("model") != model_revision:
+                continue
+
+            if (directory / "upstream-profile.yaml").read_bytes() != PROFILE.read_bytes():
+                continue
+
+            saved_overlay = directory / "profile-overlay.yaml"
+            if extra_overlay is None:
+                if saved_overlay.exists():
+                    continue
+
+            elif not saved_overlay.exists() or saved_overlay.read_bytes() != extra_overlay.read_bytes():
+                continue
+
+            done.add(json.loads((directory / "target.json").read_text())["target_id"])
+        except (OSError, ValueError, KeyError, TypeError):
+            # Incomplete run metadata never establishes a completed scan.
+            continue
+
+    return done
+
+
+def process_targets(targets, settings, extra_overlay, provenance, *,
+                    retry_failed=False, rerun_completed=False, prepare_missing=False):
+    effective_settings = settings or DEFAULT_SETTINGS
+    experiment = experiment_key(effective_settings, extra_overlay, provenance)
+    historical_done = completed_targets(effective_settings, extra_overlay, provenance)
+    outcomes = []
+    for entry in targets:
+        target = {key: entry[key] for key in ("target_id", "repo_url", "commit")}
+        target_id = target["target_id"]
+        try:
+            with TargetClaim(ROOT / "runs", target, experiment) as claim:
+                previous = claim.previous()
+                completed = (
+                    previous is not None and previous["status"] == "completed"
+                ) or target_id in historical_done
+                if completed and not rerun_completed:
+                    outcome = "skipped_completed"
+                elif previous and previous["status"] in ("failed", "interrupted") and not retry_failed:
+                    outcome = "skipped_failed"
+                else:
+                    print(f"[queue] Claimed {target_id}: {target['repo_url']} @ {target['commit']}", flush=True)
+                    source = ROOT / "targets" / target_id
+                    if not source.exists() and prepare_missing:
+                        from prepare_targets import prepare
+
+                        print(f"[prepare] Fetching {target_id}", flush=True)
+                        prepare(target)
+
+                    if not source.is_dir():
+                        raise RuntimeError("Target not prepared; use --prepare-missing or prepare_targets.py")
+
+                    outcome = run_target(target, settings, extra_overlay, claim=claim)
+                    claim.finish(outcome)
+
+        except ClaimBusy as error:
+            outcome = "skipped_running"
+            print(f"[queue] {target_id}: claimed by another worker ({error}/owner.json)", flush=True)
+        except Exception as error:
+            outcome = "failed"
+            print(f"[queue] {target_id}: {error}", flush=True)
+
+        print(f"[queue] {target_id}: {outcome}", flush=True)
+        outcomes.append({"target_id": target_id, "status": outcome})
+
+    print("[queue] No more available targets in the selected range; stopping.", flush=True)
+    return outcomes
+
+
+def queue_status():
+    active = []
+    attempts = []
+    for pattern, destination in ((".claims/*", active), (".target-status/*/*.json", attempts)):
+        for path in sorted((ROOT / "runs").glob(pattern)):
+            if destination is active:
+                path = path / "owner.json"
+
+            try:
+                destination.append(dict(json.loads(path.read_text()), metadata_path=str(path)))
+            except (OSError, ValueError):
+                destination.append({"metadata_path": str(path), "status": "unavailable"})
+
+    print(json.dumps({"active_claims": active, "latest_attempts": attempts}, indent=2))
+    return 0
+
+
 def main():
-    p = argparse.ArgumentParser()
-    p.add_argument("--limit", required=True, type=int)
-    p.add_argument("--offset", default=0, type=int)
-    p.add_argument("--resume", action="store_true")
-    p.add_argument("--profile-overlay", type=pathlib.Path)
-    p.add_argument(
-        "--model-config",
-        type=pathlib.Path,
-        help="Separate local-model experiment settings; baseline configuration stays unchanged",
-    )
-    a = p.parse_args()
-    if not 1 <= a.limit <= 166 or a.offset < 0:
-        p.error("limit 1..166 and offset >=0 required")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--limit", type=int, help="Number of manifest candidates to consider, including skipped targets")
+    parser.add_argument("--offset", default=0, type=int)
+    parser.add_argument("--resume", action="store_true", help="Compatibility option: matching completed targets are now always skipped")
+    parser.add_argument("--retry-failed", action="store_true", help="Allow a new attempt for targets this scheduler recorded as failed/interrupted")
+    parser.add_argument("--rerun-completed", action="store_true", help="Explicitly allow new attempts for matching completed targets")
+    parser.add_argument("--prepare-missing", action="store_true", help="Fetch missing sources after claiming each target")
+    parser.add_argument("--profile-overlay", type=pathlib.Path)
+    parser.add_argument("--model-config", type=pathlib.Path, help="Local model experiment settings")
+    parser.add_argument("--status", action="store_true", help="Show shared claims and latest attempts without starting work")
+    args = parser.parse_args()
+    if args.status:
+        return queue_status()
+
+    if args.limit is None or not 1 <= args.limit <= 166 or args.offset < 0:
+        parser.error("limit 1..166 and offset >=0 required")
 
     if OVERLAY.read_bytes() != (ROOT / "configs/baseline.local.yaml").read_bytes():
         raise SystemExit("Baseline overlay mismatch")
@@ -528,69 +702,48 @@ def main():
     if any(upstream_changes().values()):
         raise SystemExit("Saved upstream source checksum mismatch")
 
-    settings = load_settings(a.model_config) if a.model_config else None
-    extra_overlay = a.profile_overlay.resolve() if a.profile_overlay else None
+    settings = load_settings(args.model_config) if args.model_config else None
+    overlay = args.profile_overlay.resolve() if args.profile_overlay else None
     manifest = json.loads((ROOT / "datasets/manifest.json").read_text())
-    done = set()
-    if a.resume:
-        for s in (ROOT / "runs").glob("*/status.json"):
-            if (
-                json.loads(s.read_text())["status"] == "completed"
-                and (s.parent / "baseline.local.yaml").read_bytes()
-                == (ROOT / "configs/baseline.local.yaml").read_bytes()
-            ):
-                rev = json.loads((s.parent / "revisions.json").read_text())
-                if (
-                    rev.get("harness") == provenance["harness"]["commit"]
-                    and rev.get("dataset") == provenance["dataset"]["commit"]
-                    and (s.parent / "model-config.json").is_file()
-                    and json.loads((s.parent / "model-config.json").read_text())
-                    == (settings or DEFAULT_SETTINGS)
-                    and (
-                        (extra_overlay is None and not (s.parent / "profile-overlay.yaml").exists())
-                        or (extra_overlay is not None
-                            and (s.parent / "profile-overlay.yaml").exists()
-                            and (s.parent / "profile-overlay.yaml").read_bytes() == extra_overlay.read_bytes())
-                    )
-                ):
-                    done.add(
-                        json.loads((s.parent / "target.json").read_text())["target_id"]
-                    )
-
-    outcomes = []
-    for g in manifest["targets"][a.offset : a.offset + a.limit]:
-        if g["target_id"] in done:
-            outcomes.append(
-                {"target_id": g["target_id"], "status": "skipped_completed"}
-            )
-            continue
-
-        t = {k: g[k] for k in ("target_id", "repo_url", "commit")}
-        if not (ROOT / "targets" / g["target_id"]).exists():
-            raise SystemExit(
-                "Target not prepared: run prepare_targets.py with matching bounds"
-            )
-
-        outcomes.append(
-            {
-                "target_id": g["target_id"],
-                "status": run_target(t, settings, extra_overlay),
-            }
-        )
-    print(json.dumps(outcomes))
-    return (
-        0
-        if all(o["status"] in ("completed", "skipped_completed") for o in outcomes)
-        else 1
+    outcomes = process_targets(
+        manifest["targets"][args.offset : args.offset + args.limit], settings, overlay, provenance,
+        retry_failed=args.retry_failed,
+        rerun_completed=args.rerun_completed,
+        prepare_missing=args.prepare_missing,
     )
+    print(json.dumps(outcomes))
+    return 1 if any(item["status"] in ("failed", "skipped_failed") for item in outcomes) else 0
+
+
+def cli():
+    if "--status" in sys.argv[1:]:
+        return main()
+
+    runs = ROOT / "runs"
+    runs.mkdir(exist_ok=True)
+    # Shared mode fences older exclusive-lock runners without serializing new servers.
+    with (runs / ".runner.lock").open("a+") as legacy_lock:
+        try:
+            fcntl.flock(legacy_lock, fcntl.LOCK_SH | fcntl.LOCK_NB)
+        except BlockingIOError:
+            raise SystemExit("An older runner is active; stop it before using shared scheduling")
+
+        host_key = hashlib.sha256(socket.gethostname().encode()).hexdigest()
+        hosts = runs / ".host-locks"
+        hosts.mkdir(exist_ok=True)
+        with (hosts / f"{host_key}.lock").open("a") as host_lock:
+            try:
+                fcntl.flock(host_lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError:
+                raise SystemExit("Another runner is active on this host (local proxy port 8003)")
+
+            return main()
+
+
+def terminate(signum, frame):
+    raise KeyboardInterrupt("Runner terminated")
 
 
 if __name__ == "__main__":
-    (ROOT / "runs").mkdir(exist_ok=True)
-    with (ROOT / "runs/.runner.lock").open("w") as lock:
-        try:
-            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError:
-            raise SystemExit("Another baseline runner is active")
-        raise SystemExit(main())
-
+    signal.signal(signal.SIGTERM, terminate)
+    raise SystemExit(cli())

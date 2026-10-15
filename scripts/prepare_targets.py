@@ -45,10 +45,16 @@ def prepare(t):
             ["git", "--git-dir", str(cache), "archive", sha], stdout=f, check=True
         )
         f.seek(0)
-        dest.mkdir()
-        with tarfile.open(fileobj=f) as archive:
-            archive.extractall(dest, filter="data")
-    marker.write_text(json.dumps(t, indent=2) + "\n")
+        with tempfile.TemporaryDirectory(prefix=".export-", dir=dest.parent) as staging:
+            source = pathlib.Path(staging) / "source"
+            source.mkdir()
+            with tarfile.open(fileobj=f) as archive:
+                archive.extractall(source, filter="data")
+
+            marker.write_text(json.dumps(t, indent=2) + "\n")
+            source.rename(dest)
+
+
     shutil.rmtree(cache)
 
 

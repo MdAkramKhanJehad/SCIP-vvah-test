@@ -1,0 +1,10 @@
+{
+  "model_name": "qwen38-27b-fp8",
+  "model_dir": "/home/spl/akram/local_models/qwen38-vllm/models/Qwen3.8-27B-FP8",
+  "base_url": "http://127.0.0.1:8001/v1",
+  "tokenizer_python": "/home/spl/akram/local_models/qwen38-vllm/vllm-env/bin/python",
+  "context_limit": 262144,
+  "chat_template_kwargs": {
+    "enable_thinking": false
+  }
+}

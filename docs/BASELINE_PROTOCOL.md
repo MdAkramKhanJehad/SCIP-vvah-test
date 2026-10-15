@@ -40,18 +40,57 @@ The optional `configs/context32k.local.yaml` is a historical experimental
 packing variant. It changes evidence assembly and is applied only with explicit
 `--profile-overlay`; it is not the default baseline.
 
+The optional `configs/timeouts1200.local.yaml` is a user-requested timing
+variant, selected explicitly through `--profile-overlay`. It raises shorter
+configured detection-session deadlines, resume/replay timeouts, the S2 client
+timeout, and the S6 batch wall-clock ceiling to 1200 seconds. Longer budgets
+remain unchanged. It does not change output budgets, workers, reasoning,
+prompts or scope. Each run records its overlay and checksum as a
+`profile-variant`; comparisons must distinguish it from the original upstream
+budgets. A stage can include several attempts; 1200 seconds is not an overall
+scan limit. The S6 batch ceiling bounds its attempts collectively.
+
+The optional `configs/timeouts1200-tools.local.yaml` additionally disables
+whole-file source inlining in S4/S6 using the native `inline_source` controls.
+S4 and S6 also use one worker each to match the single-sequence server.
+Source remains accessible to read-only agent tools. This addresses the observed
+S6 initial request exceeding 131072 tokens; history and tool results remain
+subject to context checks. It changes source presentation, not target selection
+or evaluation matching. Runs record it separately as a profile variant; its
+completion and performance have not been established. The stage overlays do
+not change native preflight deadlines.
+
+For an upstream-profile local-model baseline, omit `--profile-overlay`.
+The runner then preserves all shipped detection-stage controls, including
+12 S4 workers and 7 S6 workers. These are defaults, not a documented maximum.
+Using a local non-thinking Qwen model is still an explicit model/provider
+adaptation and must be disclosed. Higher worker counts, altered timeouts or
+tool-source presentation are separate configurations.
+
+Server capacity is independent of harness worker counts. The Qwen launcher
+accepts `SCIP_MAX_NUM_SEQS`, default 2; setting it to 12 requests up to twelve
+active sequences but has not been validated on this GPU at 256K context.
+A two-sequence server may queue requests from 12 harness workers. Report its
+actual configuration rather than claiming 12-way GPU execution. No previous
+run is relabelled by this documentation or setting.
+
 ## Model connection and context
 
-The selected JSON file has five connection fields: served model name, existing
+The selected JSON file has five required connection fields: served model name, existing
 model/tokenizer directory, local HTTP endpoint, tokenizer Python and actual
-server context limit. Model settings select every model-backed role, including
+server context limit. An optional `chat_template_kwargs` field explicitly
+selects boolean `enable_thinking`; the guard applies it to actual requests
+and matching tokenizer rendering, recording the adaptation in each trace.
+The non-thinking Qwen JSON is a separate model configuration.
+Model settings select every model-backed role, including
 inactive roles and fallbacks, through a per-run overlay. No remote model or paid
 API is used. API credentials are passed through environment variables and are
 not recorded in traces.
 
 The local proxy renders the model's unchanged template over system prompts,
-tool schemas, history, source excerpts and tool results. It preserves requested
-output allowances and never inserts an output allowance when omitted. Input
+tool schemas, history, source excerpts and tool results. An explicitly configured
+thinking mode is a recorded provider adaptation. It preserves requested output
+allowances and never inserts an output allowance when omitted. Input
 plus explicitly requested output must fit the actual model context. It does
 not truncate source/history or raise the server context. If the output allowance
 is omitted, only input size can be checked; output capacity is then controlled
@@ -136,9 +175,9 @@ dependency versions, source hashes, provider request/response/tool traces,
 reported token usage and timing, CLI logs, raw reports when produced, converted
 findings, errors, evaluation subset and results. Upload credentials and
 Authorization headers are never recorded. GPU energy, peak usage and missing
-model usage measurements remain unavailable. --resume only skips completed
-matching targets and creates new attempts for failures; it does not reuse
-VVAH stage checkpoints.
+model usage measurements remain unavailable. Matching completed targets are
+always skipped (`--resume` remains accepted). Scheduler-recorded failures require
+`--retry-failed`; new attempts do not reuse VVAH stage checkpoints.
 
 Historical runs retain their original limits and results. The Qwen run
 `20261013T044135.638273Z-6429843b45889333` passed real tool replay and model
@@ -149,3 +188,60 @@ protocol and establish no model accuracy. Current boundary tests verify restored
 configuration, progress polling without termination, context accounting,
 conversion and matching. A complete detection run under the current protocol
 has not yet been established.
+
+Run status treats diagnostics explicitly marked `recovered: true` as recovered.
+Unrecovered or malformed diagnostics and a degraded report still fail the run,
+even if the harness exits with code zero. Raw diagnostics remain preserved.
+
+The optional `configs/no-stage-timeouts-tools.local.yaml` disables supported
+native detection-stage clocks using zero values; it uses two S4/S6 workers
+and source through read-only tools, matching the two-sequence Qwen launcher. It does not disable native model-client
+request timeouts, preflight budgets or token/model/tool-call limits. It is
+recorded as a separate profile variant. The smoke launcher now selects manifest
+offset 1 by default (FlowiseAI/Flowise at
+`1ae1638ed972bcc913611ae9268a972d0ae127ec`); explicit offsets remain supported.
+Historical target selections and manifests are not rewritten.
+
+The two-worker/two-sequence change requires a server restart and a new run.
+It preserves the configured 262144-token context and non-thinking mode.
+Concurrent GPU startup/inference has not yet been validated; configuration
+checks alone do not establish throughput or model quality.
+
+Run directory names use 24-hour America/New_York time, a 12-character target
+commit prefix, repository owner/name, and EDT/EST. Same-second collisions get
+an additional numeric suffix. Exact commits remain in `target.json`. Existing
+folders were renamed without editing raw run artifacts; old/new names are
+recorded in `runs/directory-renames.json`. Historical absolute paths in the
+artifacts remain historical, and native checkpoint reuse needs path handling.
+The wrapper owns run directories; VVAH owns the original findings/report files.
+
+
+## Shared-drive scheduling
+
+Each worker considers an explicit manifest range (`--offset`, `--limit`). The
+limit counts candidates, including skipped ones. An atomic directory claim is
+keyed by repository URL and exact commit, across all experiment configurations.
+One worker per host uses its own local model endpoint and request proxy. After
+each attempt it takes the next unclaimed candidate; it exits when no candidates
+remain available, without waiting for other workers or polling failed targets.
+
+Persistent latest-attempt records distinguish model settings, available model
+revision, provider overlay, native profile, optional stage overlay and upstream
+commits. Matching successful runs are skipped automatically, including compatible
+historical runs; scheduler-recorded failures/interruption require explicit retry.
+Intentional repeats require `--rerun-completed`. Historical failures without a
+scheduler record receive one new attempt. Originals and prior run directories
+are preserved. No timing, output, tool, sampling or detection controls are
+changed by scheduling. Identical model JSONs and profiles should be used across
+servers in one experiment; host-specific JSON differences identify distinct
+experiments, so do not mix them in the same queue pass.
+
+Claims record hostname, PID, UTC start time, experiment identity and run path.
+They are coordination state outside the scanning source tree. Normal completion
+and handled interruption release the claim after recording the outcome. A crash
+can leave a blocking claim, which has no automatic expiry: an operator must
+verify that the owning wrapper and scan processes have stopped before removing
+it. The shared filesystem must support atomic directory creation and rename;
+local synthetic races do not establish multi-host correctness on every mount.
+Read-only status snapshots can race with a claim being created or released and
+must not be used as a substitute for claiming work.

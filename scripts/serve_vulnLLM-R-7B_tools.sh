@@ -8,7 +8,8 @@ mkdir -p "$SCIP_ROOT/runs/server" "$SCIP_ROOT/.cache/hf" "$SCIP_ROOT/.cache/tmp"
 export HF_HOME="$SCIP_ROOT/.cache/hf" TMPDIR="$SCIP_ROOT/.cache/tmp"
 export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
 printf 'GPU memory fraction: %s; context: 32768; concurrent sequences: 1\n' "$SCIP_GPU_MEMORY_UTILIZATION"
-exec /home/spl/akram/local_models/qwen38-vllm/vllm-env/bin/vllm serve \
+SCIP_VLLM_ENV="/home/spl/akram/local_models/qwen38-vllm/vllm-env"
+exec "$SCIP_VLLM_ENV/bin/python" "$SCIP_VLLM_ENV/bin/vllm" serve \
  /home/spl/akram/local_models/vulnLLM-R-7B \
  --served-model-name vulnllm-r-7b --host 127.0.0.1 --port 8002 \
  --dtype bfloat16 --tensor-parallel-size 1 --gpu-memory-utilization "$SCIP_GPU_MEMORY_UTILIZATION" \

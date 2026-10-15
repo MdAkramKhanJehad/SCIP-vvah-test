@@ -1,0 +1,27 @@
+# Explicit variant: disabled stage clocks and tool-based source with upstream worker counts.
+# Native preflight, model-client request timeouts, and token/call/tool budgets remain.
+step2:
+  deadline: 0
+  timeout: 0
+  resume_timeout: 0
+  replay_timeout: 0
+
+step4:
+  parallel: 12
+  inline_source: false
+  deadline: 0
+  resume_timeout: 0
+  replay_timeout: 0
+
+step6_verify:
+  parallel: 7
+  inline_source: false
+  batch_deadline: 0
+  batch_wall_clock_ceiling: 0
+  resume_timeout: 0
+  replay_timeout: 0
+
+step8:
+  deadline: 0
+  timeout: 0
+  replay_timeout: 0

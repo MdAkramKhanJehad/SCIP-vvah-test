@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import copy
 import importlib.util
 import io
 import json
@@ -12,6 +13,7 @@ from contextlib import redirect_stdout
 from unittest import mock
 
 import run_baseline
+import request_guard
 import probe_model
 from convert_findings import convert, endpoint
 from evaluate_run import ROOT, evaluate
@@ -64,6 +66,35 @@ class Boundaries(unittest.TestCase):
             self.assertEqual(limits["stage_limits"]["step6_verify"]["parallel"], 7)
             self.assertTrue(json.loads((run / "status.json").read_text())["canonical_source_unchanged"])
 
+    def test_run_names_use_readable_local_time_and_actual_commit(self):
+        target = {
+            "repo_url": "https://github.com/FlowiseAI/Flowise",
+            "commit": "1ae1638ed972bcc913611ae9268a972d0ae127ec",
+        }
+        instant = run_baseline.datetime.datetime(
+            2026, 10, 14, 16, 27, 19, tzinfo=run_baseline.datetime.timezone.utc,
+        )
+        self.assertEqual(
+            run_baseline.run_directory_name(target, instant),
+            "2026-10-14_12-27-19_1ae1638ed972_FlowiseAI-Flowise_EDT",
+        )
+        with self.assertRaisesRegex(ValueError, "timezone"):
+            run_baseline.run_directory_name(target, instant.replace(tzinfo=None))
+
+    def test_run_directory_collision_does_not_overwrite_results(self):
+        target = {"repo_url": "https://example.com/owner/repo.git", "commit": "a" * 40}
+        instant = run_baseline.datetime.datetime(
+            2026, 1, 1, 18, 0, 0, tzinfo=run_baseline.datetime.timezone.utc,
+        )
+        with tempfile.TemporaryDirectory() as directory, \
+                mock.patch.object(run_baseline, "ROOT", pathlib.Path(directory)):
+            first = run_baseline.create_run_directory(target, instant)
+            (first / "result.json").write_text("original")
+            second = run_baseline.create_run_directory(target, instant)
+            self.assertEqual(first.name, "2026-01-01_13-00-00_aaaaaaaaaaaa_owner-repo_EST")
+            self.assertEqual(second.name, first.name + "_02")
+            self.assertEqual((first / "result.json").read_text(), "original")
+
     def test_qwen_profile_keeps_upstream_source_packing(self):
         settings = load_settings(ROOT / "configs/qwen38-27b-fp8-256k.json")
         self.assertEqual(settings["context_limit"], 262144)
@@ -75,6 +106,219 @@ class Boundaries(unittest.TestCase):
             self.assertTrue(effective.step4.inline_source)
             self.assertTrue(effective.step6_verify.inline_source)
             self.assertEqual(effective.step2.max_inventory_files, 1200)
+
+    def test_local_baseline_uses_all_upstream_detection_controls(self):
+        settings = load_settings(ROOT / "configs/qwen38-27b-fp8-256k-nonthinking.json")
+        native = load(run_baseline.PROFILE)._data
+        with tempfile.TemporaryDirectory() as directory:
+            effective = load(model_profile(pathlib.Path(directory), settings))._data
+            for stage in (
+                "step0", "step1", "step2", "step3", "step4", "step5_prefilter",
+                "step5_detectors", "step6_verify", "step7_dedup", "step8", "step9",
+            ):
+                self.assertEqual(effective[stage], native[stage], stage)
+
+            self.assertEqual(effective["step4"]["parallel"], 12)
+            self.assertEqual(effective["step6_verify"]["parallel"], 7)
+            self.assertEqual(effective["models"]["threatmodel"]["id"], settings["model_name"])
+            self.assertEqual(settings["chat_template_kwargs"], {"enable_thinking": False})
+            self.assertFalse((pathlib.Path(directory) / "profile-overlay.yaml").exists())
+
+    def test_timeout_variant_changes_only_short_detection_budgets(self):
+        settings = load_settings(ROOT / "configs/qwen38-27b-fp8-256k.json")
+        overlay_path = ROOT / "configs/timeouts1200.local.yaml"
+        overrides = yaml.safe_load(overlay_path.read_text())
+        baseline = (ROOT / "configs/baseline.local.yaml").read_bytes()
+        with tempfile.TemporaryDirectory() as directory:
+            reference_dir = pathlib.Path(directory) / "reference"
+            variant_dir = pathlib.Path(directory) / "variant"
+            reference_dir.mkdir()
+            variant_dir.mkdir()
+            reference = load(model_profile(reference_dir, settings))._data
+            variant = load(model_profile(variant_dir, settings, overlay_path))._data
+            expected = copy.deepcopy(reference)
+            for stage, budgets in overrides.items():
+                for key, seconds in budgets.items():
+                    self.assertGreater(reference[stage][key], 0)
+                    self.assertLess(reference[stage][key], 1200)
+                    self.assertEqual(seconds, 1200)
+                    expected[stage][key] = 1200
+
+            # Config loader metadata records the different per-run profile directories.
+            self.assertEqual(reference["_config_dir"], str(reference_dir / "profiles"))
+            self.assertEqual(variant["_config_dir"], str(variant_dir / "profiles"))
+            expected["_config_dir"] = variant["_config_dir"]
+            self.assertEqual(variant, expected)
+            self.assertEqual(variant["step8"]["timeout"], 1800)
+            self.assertEqual(
+                (variant_dir / "profile-overlay.yaml").read_bytes(),
+                overlay_path.read_bytes(),
+            )
+
+        self.assertEqual((ROOT / "configs/baseline.local.yaml").read_bytes(), baseline)
+        self.assertEqual(upstream_changes(), {"harness": [], "dataset": []})
+
+    def test_tools_variant_keeps_source_access_without_whole_file_inlining(self):
+        from vvaharness.pipeline.stages.s6.session import _load_code
+
+        settings = load_settings(ROOT / "configs/qwen38-27b-fp8-256k.json")
+        with tempfile.TemporaryDirectory() as directory:
+            reference_dir = pathlib.Path(directory) / "reference"
+            variant_dir = pathlib.Path(directory) / "variant"
+            reference_dir.mkdir()
+            variant_dir.mkdir()
+            reference = load(model_profile(
+                reference_dir, settings, ROOT / "configs/timeouts1200.local.yaml",
+            ))._data
+            config = load(model_profile(
+                variant_dir, settings, ROOT / "configs/timeouts1200-tools.local.yaml",
+            ))
+            expected = copy.deepcopy(reference)
+            expected["_config_dir"] = config._data["_config_dir"]
+            expected["step4"]["inline_source"] = False
+            expected["step6_verify"]["inline_source"] = False
+            expected["step4"]["parallel"] = 1
+            expected["step6_verify"]["parallel"] = 1
+            self.assertEqual(config._data, expected)
+            self.assertIn("Read", config.step4.allowed_tools)
+            self.assertIn("Read", config.step6_verify.allowed_tools)
+            # Native S6 must avoid reading/embedding whole files even when a path is huge.
+            self.assertIsNone(_load_code(["not-read.py"], pathlib.Path(directory), config.step6_verify))
+
+    def test_recovered_diagnostics_do_not_fail_an_otherwise_complete_scan(self):
+        with tempfile.TemporaryDirectory() as directory:
+            report = pathlib.Path(directory)
+            self.assertFalse(run_baseline.has_unrecovered_stage_errors(report))
+            errors = report / "scan_errors.jsonl"
+            errors.write_text(json.dumps({"stage": "s1 autoexclude", "recovered": True}) + "\n")
+            self.assertFalse(run_baseline.has_unrecovered_stage_errors(report))
+            with errors.open("a") as stream:
+                stream.write(json.dumps({"stage": "s6-verify", "error": "timeout"}) + "\n")
+
+            self.assertTrue(run_baseline.has_unrecovered_stage_errors(report))
+            errors.write_text(json.dumps({"stage": "s4", "recovered": False}) + "\n")
+            self.assertTrue(run_baseline.has_unrecovered_stage_errors(report))
+
+    def test_malformed_stage_diagnostics_fail_closed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            report = pathlib.Path(directory)
+            errors = report / "scan_errors.jsonl"
+            errors.write_text("not-json\n")
+            self.assertTrue(run_baseline.has_unrecovered_stage_errors(report))
+            errors.write_text('[]\n')
+            self.assertTrue(run_baseline.has_unrecovered_stage_errors(report))
+
+    def test_zero_stage_clocks_use_upstream_disable_semantics(self):
+        from vvaharness.evidence import _cap_int
+        from vvaharness.pipeline.stages import replay
+        from vvaharness.pipeline.stages.s6.batching import ceiling_secs, sweep_ceiling_secs
+
+        settings = load_settings(ROOT / "configs/qwen38-27b-fp8-256k.json")
+        overlay_path = ROOT / "configs/no-stage-timeouts-tools.local.yaml"
+        overrides = yaml.safe_load(overlay_path.read_text())
+        with tempfile.TemporaryDirectory() as directory:
+            config = load(model_profile(pathlib.Path(directory), settings, overlay_path))
+            for stage, knobs in overrides.items():
+                for key, value in knobs.items():
+                    self.assertEqual(config._data[stage][key], value)
+
+            self.assertEqual(config.step4.parallel, 2)
+            self.assertEqual(config.step6_verify.parallel, 2)
+            self.assertEqual(_cap_int(config.step2, "timeout", 1800), 0)
+            self.assertEqual(replay.deadline_bound(0, 0, "high", via="deepagents"), 0)
+            self.assertEqual(ceiling_secs(config.step6_verify), 0)
+            self.assertEqual(sweep_ceiling_secs(config.step6_verify, via="deepagents", cli_effort=None), 0)
+            with mock.patch.object(replay, "start_daemon") as start:
+                self.assertEqual(replay.run_with_deadline(lambda: "completed", seconds=0, stage="test"), "completed")
+                start.assert_not_called()
+
+            self.assertEqual(config.step2.max_tokens, 64000)
+            self.assertEqual(config.step6_verify.max_tokens, 32000)
+            self.assertIn("Read", config.step6_verify.allowed_tools)
+
+    def test_smoke_selects_one_new_target_and_forwards_explicit_offset(self):
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = pathlib.Path(directory)
+            (workspace / "scripts").mkdir()
+            (workspace / ".venv/bin").mkdir(parents=True)
+            launcher = workspace / "scripts/smoke.sh"
+            shutil.copy2(ROOT / "scripts/smoke.sh", launcher)
+            python = workspace / ".venv/bin/python"
+            python.write_text('#!/bin/sh\nprintf "%s\\n" "$@"\n')
+            python.chmod(0o700)
+            for extra, offset in (([], 1), (["--offset", "2"], 2)):
+                result = run_baseline.subprocess.run(
+                    ["bash", str(launcher), *extra], check=True, capture_output=True, text=True,
+                )
+                args = result.stdout.splitlines()
+                self.assertEqual(args[0], "scripts/run_baseline.py")
+                self.assertEqual(args[args.index("--limit") + 1], "1")
+                positions = [i for i, value in enumerate(args) if value == "--offset"]
+                self.assertEqual(args[positions[-1] + 1], str(offset))
+
+    def test_nonthinking_model_config_is_explicit_and_validated(self):
+        settings = load_settings(ROOT / "configs/qwen38-27b-fp8-256k-nonthinking.json")
+        self.assertEqual(settings["chat_template_kwargs"], {"enable_thinking": False})
+        original = load_settings(ROOT / "configs/qwen38-27b-fp8-256k.json")
+        self.assertEqual({key: settings[key] for key in original}, original)
+        with tempfile.TemporaryDirectory() as directory:
+            path = pathlib.Path(directory) / "invalid.json"
+            settings["chat_template_kwargs"] = {"enable_thinking": "false"}
+            path.write_text(json.dumps(settings))
+            with self.assertRaisesRegex(ValueError, "JSON boolean"):
+                load_settings(path)
+
+    def test_template_mode_preserves_unadapted_requests(self):
+        data = {"model": DEFAULT_SETTINGS["model_name"], "messages": [], "max_tokens": 4096}
+        self.assertIs(request_guard.apply_model_template(data, DEFAULT_SETTINGS), data)
+        settings = dict(DEFAULT_SETTINGS, chat_template_kwargs={"enable_thinking": False})
+        adapted = request_guard.apply_model_template(data, settings)
+        self.assertEqual(adapted["chat_template_kwargs"], {"enable_thinking": False})
+        self.assertEqual(adapted["max_tokens"], 4096)
+        self.assertNotIn("chat_template_kwargs", data)
+
+    def test_nonthinking_transport_and_token_count_use_the_same_template(self):
+        settings = dict(DEFAULT_SETTINGS, chat_template_kwargs={"enable_thinking": False})
+        data = {
+            "model": settings["model_name"],
+            "messages": [{"role": "user", "content": "hello"}],
+            "max_tokens": 32,
+            "chat_template_kwargs": {"enable_thinking": True},
+        }
+        body = json.dumps(data).encode()
+        tokenizer = mock.Mock()
+        tokenizer.apply_chat_template.return_value = list(range(11))
+        response = mock.Mock(code=200, headers={"Content-Type": "application/json"})
+        response.read1.side_effect = [b'{"choices": []}', b""]
+        with tempfile.TemporaryDirectory() as directory:
+            trace = pathlib.Path(directory) / "trace.jsonl"
+            handler = request_guard.Handler.__new__(request_guard.Handler)
+            handler.path = "/v1/chat/completions"
+            handler.command = "POST"
+            handler.headers = {"Content-Length": str(len(body))}
+            handler.rfile = io.BytesIO(body)
+            handler.wfile = io.BytesIO()
+            handler.server = mock.Mock(trace=str(trace))
+            handler.send_response = mock.Mock()
+            handler.send_header = mock.Mock()
+            handler.end_headers = mock.Mock()
+            with mock.patch.object(request_guard, "SETTINGS", settings), \
+                    mock.patch.object(request_guard, "TOKENIZER", tokenizer), \
+                    mock.patch.object(request_guard, "OPENER") as opener:
+                opener.open.return_value = response
+                handler.handle_request()
+                forwarded = json.loads(opener.open.call_args.args[0].data)
+
+            self.assertFalse(forwarded["chat_template_kwargs"]["enable_thinking"])
+            self.assertFalse(tokenizer.apply_chat_template.call_args.kwargs["enable_thinking"])
+            self.assertEqual(forwarded["messages"], data["messages"])
+            self.assertEqual(forwarded["max_tokens"], 32)
+            row = json.loads(trace.read_text())
+            self.assertEqual(row["status"], 200)
+            self.assertEqual(row["input_tokens"], 11)
+            self.assertEqual(row["output_allowance"], 32)
+            self.assertTrue(row["provider_adaptation"]["original_chat_template_kwargs"]["enable_thinking"])
+            self.assertNotIn("Authorization", row)
 
     def test_probe_rejects_smaller_server_context_before_inference(self):
         settings = load_settings(ROOT / "configs/qwen38-27b-fp8-256k.json")
