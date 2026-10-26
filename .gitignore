@@ -2,8 +2,8 @@
 /.venv/
 /venv/
 /.cache/
-/targets/
-/runs/
+/vulngym-targets/
+/vulngym-runs/
 /local_models/
 /models/
 
@@ -28,3 +28,5 @@ __pycache__/
 build/
 dist/
 .DS_Store
+
+/runs/

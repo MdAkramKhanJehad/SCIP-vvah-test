@@ -1,232 +1,102 @@
-# SCIP VVAH research workspace
+# VVAH on CryptoAPI-Bench
 
-Evaluate the pinned Visa Vulnerability Agentic Harness on Tencent VulnGym using
-an existing local OpenAI-compatible model server. This snapshot has **23
-repositories, 166 repository/commit targets, 184 advisories and 408 annotated
-entry paths**. Each target is scanned once per model/profile experiment.
+Run the vendored Visa Vulnerability Agentic Harness with the existing local Qwen 3.5 9B model. The active workflow uses only three scripts. No ground-truth matching is performed yet.
 
-VulnGym and VVAH source are included. Their LICENSE and NOTICE files remain in
-place; upstream commits and checksums are in `configs/upstream-revisions.json`.
-Model weights, environments, prepared sources, caches and results are excluded
-from Git. On a shared drive, use the **same checkout and `runs/` directory on
-all servers** so they share the queue.
-
-## 1. Install the harness environment
-
-For a new checkout:
-
-```bash
-git clone --branch master https://github.com/MdAkramKhanJehad/SCIP-vvah-test.git
-cd SCIP-vvah-test
-UV_CACHE_DIR="$PWD/.cache/uv" uv venv --python 3.12 .venv
-UV_CACHE_DIR="$PWD/.cache/uv" uv pip install \
-  --python .venv/bin/python -r configs/harness-requirements.lock.txt
-cp configs/baseline.local.yaml \
-  harnesses/visa-vulnerability-agentic-harness/vvaharness/config/profiles/config.local.yaml
-chmod 600 harnesses/visa-vulnerability-agentic-harness/vvaharness/config/profiles/config.local.yaml
-```
-
-Do this once for a shared checkout, before starting workers. The existing shared
-checkout is `/home/spl/akram/SCIP-vvah-test`. A shared environment requires
-compatible Python paths, operating systems and dependencies on every server.
-These commands do not change the separate vLLM/PyTorch/CUDA environment.
-
-## 2. Start a model on each worker server
-
-In a separate terminal on **each server**:
+## 1. Download the dataset
 
 ```bash
 cd /home/spl/akram/SCIP-vvah-test
-bash scripts/serve_qwen_tools.sh
+.venv/bin/python scripts/download_cryptoapi_bench.py
 ```
 
-Wait for vLLM to report that the API server is ready. The launcher uses this
-installation's existing model/environment paths. For another installation or
-model, adjust the launcher and copy a model JSON under `configs/`. Set
-`model_name`, `model_dir`, `tokenizer_python`, `base_url` and `context_limit` to
-match that server. Tool calling must work; plain chat alone is insufficient.
+This creates `datasets/CryptoAPI-Bench/`, pinned by default to commit `e6b6b50fef6970151300c1ac2de62e188ba6de19`. `.upstream.json` records the source URL and exact commit. The download contains the upstream spreadsheet for later evaluation, but retains no Git history. An existing dataset is not overwritten.
 
-The examples below use `configs/qwen38-27b-fp8-256k-nonthinking.json`, which
-explicitly requests non-thinking mode. Use the same model and profile settings
-on every server participating in the same experiment. Each server connects to
-its **own** `127.0.0.1:8001` model, through its own local port-8003 request proxy.
+## 2. Serve Qwen 3.5 9B
 
-## 3. Check one target first
+On the machine with the GPU:
 
 ```bash
-.venv/bin/python scripts/run_baseline.py --offset 1 --limit 1 --prepare-missing \
-  --model-config configs/qwen38-27b-fp8-256k-nonthinking.json
+bash scripts/serve_qwen_3.5-9b.sh
 ```
 
-Equivalent smoke command:
+This uses the weights at `/home/spl/akram/local_models/qwen3.5-9b` and the existing `qwen38-vllm/vllm-env`. It follows `/home/spl/akram/local_models/run_qwen3.5-9b.sh`: BF16, port **8005**, model name **qwen35-9b**, context **262144**, GPU memory utilization **0.60**, one sequence, batched-token budget **8192**, prefix caching, capture size **1**, and the same reasoning/tool parsers. The added `--default-chat-template-kwargs '{"enable_thinking": false}'` disables native thinking. The environment and weights are not modified. If port 8005 is already occupied by the older launcher, stop that server in its owning terminal before starting this script; an existing process does not inherit the new no-thinking flag.
 
-```bash
-bash scripts/smoke.sh --prepare-missing \
-  --model-config configs/qwen38-27b-fp8-256k-nonthinking.json
-```
+## 3. Run one file first
 
-This selects the second manifest target: Flowise commit
-`1ae1638ed972bcc913611ae9268a972d0ae127ec`. Pass `--offset N` to select another
-manifest position. Smoke runs the full detection workflow through S9 for one
-target; it does not shorten VVAH's stages. Matching completed targets are skipped.
-Use `--retry-failed` to retry a failure recorded by the shared scheduler, or
-`--rerun-completed` to deliberately repeat a completed target in a new directory.
-
-## 4. Run continuously across multiple servers
-
-After checking the setup, run this **same command once on each server**, from
-the shared checkout:
+In another terminal on the same machine:
 
 ```bash
 cd /home/spl/akram/SCIP-vvah-test
-.venv/bin/python -u scripts/run_baseline.py --offset 0 --limit 166 --prepare-missing \
-  --model-config configs/qwen38-27b-fp8-256k-nonthinking.json
+.venv/bin/python -u scripts/run_cryptoapi_bench.py --limit 1
 ```
 
-This command authorizes considering the full dataset; it is not executed by
-installation or tests. Start with `--limit 5` instead to restrict every worker
-to the same first five candidates.
-
-Each worker atomically claims an available repository/commit, prepares missing
-source, runs detection, saves conversion/evaluation outputs, and moves to the
-next available candidate. Workers skip commits claimed by another server and
-matching completed targets. A failed scan is recorded and the worker continues.
-**When no available targets remain in its selected range, the worker exits.**
-It does not wait for other workers or repeatedly retry failures.
-
-`--limit` is the number of manifest candidates considered, including skipped
-ones, not the number each server must finish. Servers need no separate offsets
-when working from the same range. Only one wrapper may run per server because
-its local proxy uses port 8003. Do not run standalone `prepare_targets.py` on
-sources while workers are preparing the same targets; use `--prepare-missing`.
-Stop older, pre-update runners before starting these workers.
-
-The default command preserves VVAH's shipped detection-stage controls. To use
-the existing experimental profile with disabled stage clocks, two S4/S6 workers
-and tool-based source access, append this option on **every worker**:
+Select a particular file by its Java class name:
 
 ```bash
---profile-overlay configs/no-stage-timeouts-tools.local.yaml
+.venv/bin/python -u scripts/run_cryptoapi_bench.py --case BrokenCryptoABMCCase1
 ```
 
-For VVAH's shipped worker counts (S4: 12; S6: 7) with the same disabled
-stage clocks and tool-based source access, use this overlay instead:
+List input files, or prepare one without calling a model:
 
 ```bash
---profile-overlay configs/no-stage-timeouts-tools-upstream-workers.local.yaml
+.venv/bin/python scripts/run_cryptoapi_bench.py --list
+.venv/bin/python scripts/run_cryptoapi_bench.py --limit 1 --dry-run
 ```
 
-For higher finite stage timeouts with 12 S4 / 7 S6 workers and up to 12 active
-model sequences, use these two terminals on **each machine**.
-
-**Terminal 1 — Qwen server.** If Qwen is already running, stop it in its owning
-terminal before restarting with the new sequence capacity:
+Run every Java file sequentially:
 
 ```bash
-cd /home/spl/akram/SCIP-vvah-test
-
-SCIP_MAX_NUM_SEQS=12 bash scripts/serve_qwen_tools.sh
+.venv/bin/python -u scripts/run_cryptoapi_bench.py
 ```
 
-Wait until the API server reports that it is ready. Twelve active sequences at
-a 256K context have not been validated on this 48 GB GPU; available KV-cache
-memory determines actual concurrency. S4 and S6 run at different stages, so
-their worker counts are not added together.
+The snapshot has **203 Java source files**. Each VVAH invocation receives **exactly one file**, copied with its original relative path and contents. Helper classes are separate inputs; they are not bundled with callers. Consequently this protocol does not supply the cross-file context of upstream multi-class benchmark cases. File names such as `Corrected` and original source comments are retained; this is not a blinded benchmark.
 
-**Terminal 2 — harness worker.** Run the same command on every machine from
-the shared checkout:
+The runner uses VVAH's documented `scan --repo ... --stop-after s9` path, with read-only DeepAgents detection tools. Every model role points to `http://127.0.0.1:8005/v1`; remote model fallbacks, exploit verification, remediation, report uploads, and external annotation injection are disabled. S4 and S6 each use one worker to match the server's one sequence. The runner does not execute the Java samples.
 
-```bash
-cd /home/spl/akram/SCIP-vvah-test
+Detection output budgets, including replay budgets, are **131072 tokens**; model roles cap native retry growth at that same allowance. Input plus output must fit within **262144 tokens**. A large allowance is not a guarantee of complete generation: the model can stop early, tools have their own output limits, and native VVAH context packing and finite stage/call budgets still apply. Their failures and native truncation warnings remain visible in the logs. No wrapper wall-clock deadline or automatic whole-scan retry is added.
 
-.venv/bin/python -u scripts/run_baseline.py \
-  --offset 0 --limit 166 --prepare-missing \
-  --model-config configs/qwen38-27b-fp8-256k-nonthinking.json \
-  --profile-overlay configs/timeouts1200-tools-upstream-workers.local.yaml
-```
+## Outputs and stage visibility
 
-This sets detection stage/session budgets below 1200 seconds to **1200 seconds**,
-keeps the S8 session timeout at **1800 seconds**, uses 12 S4 / 7 S6 workers and
-retains tool-based source access. Resume/replay attempts have their own budgets,
-so 1200 seconds is not an overall scan or stage-duration cap. This profile is
-separate from both the native-default and disabled-clock profiles. Pass it to
-the smoke or main runner, and use it consistently for retries and every server.
-
-These are upstream defaults, not a fixed maximum. The model launcher still
-allows two active sequences by default; additional agent requests queue.
-Neither this profile nor twelve simultaneous model requests have been validated
-by a real multi-server scan.
-
-That profile is a declared experiment variant. Server capacity and local-model
-integration must also be reported when describing the baseline.
-
-## 5. Check progress or retry failures
-
-From any server, including one with an active worker:
-
-```bash
-.venv/bin/python scripts/run_baseline.py --status
-```
-
-The JSON lists active claims and the latest attempt for each target/experiment,
-including hostname, PID, timestamps and run directory when created. Detailed
-stage updates appear in each worker's terminal and its `scan.log`.
-
-To make one more pass that includes previously failed/interrupted targets:
-
-```bash
-.venv/bin/python -u scripts/run_baseline.py --offset 0 --limit 166 --prepare-missing \
-  --retry-failed --model-config configs/qwen38-27b-fp8-256k-nonthinking.json
-```
-
-Claims under `runs/.claims/` are shared across all configurations, preventing
-simultaneous scans of the same commit. Completion/failure records under
-`runs/.target-status/` are scoped to model/profile settings and upstream/model
-revisions. `--resume` remains accepted; completed-target skipping is now automatic.
-Historical completed matching runs are also recognized. Historical failures
-created before this scheduler have no queue record and get one new attempt.
-
-Ctrl+C or SIGTERM normally stops the active subprocess group, records an
-interruption and releases the claim. A server crash or SIGKILL can leave an
-abandoned claim. Claims **never expire automatically**. Check `owner.json` on
-the recorded host and confirm both the wrapper and its scan subprocesses have
-stopped before manually removing that claim's `owner.json` and empty directory.
-An incomplete claim directory also blocks work and needs the same inspection.
-Do not delete the entire claims directory while workers are active.
-
-## 6. Find outputs and evaluate them
-
-Each attempt uses its own directory:
+Every invocation creates a new session in New York time using a readable 24-hour clock:
 
 ```text
-runs/YYYY-MM-DD_HH-MM-SS_<commit12>_<owner-repo>_<EDT-or-EST>/
-  execution.json                          worker/claim information
-  scan.log                                VVAH progress and diagnostics
-  scan-source/security-scan/findings.json  native VVAH final findings, if produced
-  raw-findings.json                       preserved final report copy
-  converted.jsonl                         benchmark-format predictions
-  conversion-errors.jsonl                 missing/unsupported predicted evidence
-  status.json                             completed/failed and reason
+runs/cryptoapi-bench/YYYY-MM-DD_HH-MM-SS_microseconds_EDT/
+  BrokenCryptoABMCCase1/
+    input.json                   # selected file, input checksum, dataset/harness/model revisions, budgets
+    config.yaml                  # full effective VVAH profile
+    command.json                 # exact worker command
+    scan.log                     # complete console output, also streamed live
+    diagnostics.jsonl            # native VVAH debug records
+    status.json                  # exit code, elapsed time, report path, source integrity
+    stages/
+      preflight/model-events.jsonl
+      s0/progress.log
+      s0/output.json
+      s1/...
+      s2/model-events.jsonl
+      s2/output.json
+      s2/provenance.json
+      ...
+      s9/...
+    transcripts/                 # native agent turns and tool traces
+    state/                       # native checkpoint database and graph state
+    source/
+      src/main/java/.../BrokenCryptoABMCCase1.java
+      security-scan/
+        findings.json            # final VVAH report, when emitted
+        ...                      # native Markdown, SARIF, manifests, and errors
 ```
 
-Evaluation files are saved alongside these outputs; see
-[exact evaluation outputs and matching rules](docs/SETUP.md#outputs-and-evaluation).
-The wrapper automatically runs conversion and evaluates the selected target's
-benchmark subset. Failed/degraded scans are not valid completed evaluations.
-Unmatched findings are not automatically false positives. VulnGym supports
-entry-level and advisory-level recall; precision and F1 require additional
-validated labeling. Missing predicted locations are never filled from ground truth.
+`EST` replaces `EDT` when applicable. `model-events.jsonl` records application-level model inputs (system/user/history messages and reported tool schemas/parameters), generated outputs, tool inputs/results, request IDs, phases, and reported usage without clipping text in this logger. These are LangChain callback observations, not raw HTTP packets or the server's rendered token stream. No authentication headers or API secrets are logged. Deterministic stages make no model requests and therefore have no model-event log.
 
-Canonical sources stay under `targets/` without Git history or benchmark
-annotations; VVAH scans a disposable source copy. Model traces and logs remain
-under `runs/` on the shared drive, excluded from Git.
+Stage `output.json` files are JSON exports of VVAH's actual SQLite checkpoints, written when the worker exits. The original checkpoint database is also retained. Stages that fail before checkpointing have no output checkpoint; consult their progress, error events, and native error files. A process exit of zero alone does not certify a complete detection result: inspect the native manifest stage outcomes, errors, and `degraded` field. Original dataset sources remain unchanged; VVAH writes reports only in each run's disposable copy.
 
-See [SETUP.md](docs/SETUP.md) and [BASELINE_PROTOCOL.md](docs/BASELINE_PROTOCOL.md)
-for detailed configuration, budgets and known model/evaluation limitations.
+The runner never reads the spreadsheet, dataset README, or ground-truth labels. Only the selected Java file is placed in the agent's read-only scan inventory. Spreadsheet labels and annotations are not passed as prompts or injected knowledge. Original source comments and descriptive filenames remain visible.
 
-Scheduler validation (synthetic targets; no inference):
+Ctrl+C stops the active worker process group and saves its status. A retry starts a fresh session; it does not overwrite or resume the old run. This minimal runner has no shared multi-server claims or automatic skip queue. Use different explicit `--case` selections if running on multiple machines.
 
-```bash
-PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m unittest discover \
-  -s scripts -p test_shared_runner.py -v
-```
+## Ground truth, reserved for later evaluation
+
+`datasets/CryptoAPI-Bench/CryptoAPI-Bench_details.xlsx` has a `Vulnerabilities` worksheet with columns for properties, file(s), code number, vulnerability existence, vulnerability type, method name, line references, and notes. Some rows describe multiple files; some line-reference cells have Excel date formatting/serial values. The spreadsheet and source listing also differ in places. Later evaluation must reconcile those details rather than assume every source file is an independently labeled benchmark case. No matching script or test file is added in this workflow.
+
+Earlier VulnGym datasets, `vulngym-runs/`, `vulngym-targets/`, and their configuration/protocol records are retained as historical research artifacts. Their old runner, evaluation, test, and model-serving scripts have been removed from `scripts/`. The harness source and existing Python/model environments are retained.
