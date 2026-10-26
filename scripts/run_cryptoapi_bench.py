@@ -26,10 +26,12 @@ MODEL_DIR = Path("/home/spl/akram/local_models/qwen3.5-9b")
 OUTPUT_TOKENS = 131072
 
 
+# Save readable UTF-8 JSON for run metadata and stage outputs.
 def write_json(path, value):
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
+# Find Java inputs in a stable order without reading benchmark annotations.
 def input_files(dataset):
     files = sorted((dataset / "src/main/java").rglob("*.java"))
     if not files:
@@ -43,6 +45,7 @@ def profile(harness):
     source = harness / "vvaharness/config/profiles/default.yaml"
     config = yaml.safe_load(source.read_text(encoding="utf-8"))
 
+    # Route every model role, including nested roles, to the same local endpoint.
     def local_roles(node):
         if "id" in node:
             node.update(id=MODEL, via="deepagents", provider="openai", use_responses_api=False, max_tokens=OUTPUT_TOKENS)
@@ -72,6 +75,7 @@ def profile(harness):
     return config
 
 
+# Register local callbacks that record model and tool activity by VVAH stage.
 def install_model_logging(directory):
     """Observe LangChain calls locally; never modify their inputs or outputs."""
     from langchain_core.callbacks import BaseCallbackHandler
@@ -83,6 +87,7 @@ def install_model_logging(directory):
         lock = threading.Lock()
         phases = {}
 
+        # Append an event to its stage log while keeping concurrent writes together.
         def emit(self, kind, run_id, data, parent_run_id=None):
             key = str(run_id)
             with self.lock:
@@ -97,6 +102,7 @@ def install_model_logging(directory):
                 with (folder / "model-events.jsonl").open("a", encoding="utf-8") as stream:
                     stream.write(json.dumps(row, ensure_ascii=False, default=str) + "\n")
 
+        # Record model messages and selected request settings, excluding credentials.
         def on_chat_model_start(self, serialized, messages, *, run_id, parent_run_id=None, **kwargs):
             params = kwargs.get("invocation_params", {})
             allowed = {"model", "model_name", "temperature", "top_p", "max_tokens", "max_completion_tokens",
@@ -106,26 +112,31 @@ def install_model_logging(directory):
                 "parameters": {key: value for key, value in params.items() if key in allowed},
             }, parent_run_id)
 
+        # Save the generated response and any usage or completion metadata it reports.
         def on_llm_end(self, response, *, run_id, parent_run_id=None, **kwargs):
             self.emit("model_output", run_id, response.model_dump(mode="json"), parent_run_id)
 
+        # Record a failed model request with its request and parent identifiers.
         def on_llm_error(self, error, *, run_id, parent_run_id=None, **kwargs):
             self.emit("model_error", run_id, str(error), parent_run_id)
 
+        # Record the selected tool and the input supplied to it.
         def on_tool_start(self, serialized, input_str, *, run_id, parent_run_id=None, **kwargs):
             self.emit("tool_input", run_id, {"name": (serialized or {}).get("name"), "input": input_str}, parent_run_id)
 
+        # Save the result returned by the tool.
         def on_tool_end(self, output, *, run_id, parent_run_id=None, **kwargs):
             value = output.model_dump(mode="json") if hasattr(output, "model_dump") else output
             self.emit("tool_output", run_id, value, parent_run_id)
 
+        # Record a failed tool call so its missing result remains visible.
         def on_tool_error(self, error, *, run_id, parent_run_id=None, **kwargs):
             self.emit("tool_error", run_id, str(error), parent_run_id)
 
-    register_configure_hook(ContextVar("cryptoapi_trace", default=None), True,
-                            handle_class=StageTrace, env_var="SCIP_STAGE_TRACE")
+    register_configure_hook(ContextVar("cryptoapi_trace", default=None), True,  handle_class=StageTrace, env_var="SCIP_STAGE_TRACE")
 
 
+# Export native stage outputs and provenance from the checkpoint database.
 def export_checkpoints(directory):
     database = directory / "state/vvaharness.db"
     if not database.exists():
@@ -145,6 +156,7 @@ def export_checkpoints(directory):
                 write_json(folder / name, json.loads(payload))
 
 
+# Run VVAH through S9 and export available checkpoints when the worker exits.
 def worker(directory):
     install_model_logging(directory)
     from vvaharness.cli import main as vvah_main
@@ -157,6 +169,7 @@ def worker(directory):
         export_checkpoints(directory)
 
 
+# Prepare one isolated Java file, run its worker, and save logs and completion status.
 def scan(case, dataset, harness, session, dry_run):
     directory = session / case.stem
     directory.mkdir()
@@ -249,6 +262,7 @@ def scan(case, dataset, harness, session, dry_run):
     return code if before == after else 1
 
 
+# Select inputs from CLI options and process them sequentially in a new run session.
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dataset", type=Path, default=ROOT / "datasets/CryptoAPI-Bench")
@@ -288,16 +302,23 @@ def main():
     session = args.output.resolve() / datetime.datetime.now(ZoneInfo("America/New_York")).strftime("%Y-%m-%d_%H-%M-%S_%f_%Z")
     session.mkdir(parents=True)
     print(f"Selected {len(cases)} case(s); session: {session}", flush=True)
+    total = len(cases)
+    processed = 0
     failed = 0
+    action = "Preparing" if args.dry_run else "Starting"
+    completed_action = "Prepared" if args.dry_run else "Processed"
     try:
-        for case in cases:
+        for position, case in enumerate(cases, start=1):
+            print(f"[{position}/{total}] {action} {case.name}; {processed} already processed", flush=True)
             failed += bool(scan(case, dataset, harness, session, args.dry_run))
+            processed += 1
+            print(f"[progress] {completed_action} {processed}/{total}; failed: {failed}; remaining: {total - processed}", flush=True)
 
     except KeyboardInterrupt:
-        print("Interrupted; logs preserved. Rerun with --case to start that case again.", flush=True)
+        print(f"Interrupted after {processed}/{total} processed; failed: {failed}. Logs preserved; rerun with --case to retry the interrupted file.", flush=True)
         return 130
 
-    print(f"Finished {len(cases)} input file(s); failed processes/integrity checks: {failed}; session: {session}", flush=True)
+    print(f"{completed_action} {processed}/{total} input file(s); failed processes/integrity checks: {failed}; session: {session}", flush=True)
     return 1 if failed else 0
 
 
