@@ -24,6 +24,7 @@ MODEL = "qwen35-9b"
 BASE_URL = "http://127.0.0.1:8005/v1"
 MODEL_DIR = Path("/home/spl/akram/local_models/qwen3.5-9b")
 OUTPUT_TOKENS = 131072
+JVM_ARGS = "-Xms256m -Xmx4g"
 
 
 # Save readable UTF-8 JSON for run metadata and stage outputs.
@@ -58,7 +59,12 @@ def profile(harness):
     config["openai"] = {"api_key": "EMPTY", "base_url": BASE_URL, "no_proxy": "127.0.0.1,localhost"}
     config["sdk"] = {"cache_markers": "off"}
     config["cache_markers"] = "off"
-    config["inject"] = {}
+    # VVAH requires these keys; absent files load as empty lists without exposing labels.
+    config["inject"] = {
+        "cve_file": "__annotations_disabled__/cves.json",
+        "controls_file": "__annotations_disabled__/controls.yaml",
+        "cmdb_file": "",
+    }
     config["step1"]["auto_exclude_max_tokens"] = OUTPUT_TOKENS
     for name in ("step2", "step4", "step6_verify", "step7_dedup", "step8"):
         config[name]["max_tokens"] = OUTPUT_TOKENS
@@ -194,6 +200,7 @@ def scan(case, dataset, harness, session, dry_run):
         "model_revision": revision_file.read_text().strip() if revision_file.exists() else None,
         "runner_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         "base_url": BASE_URL, "context_limit": 262144, "max_output_tokens": OUTPUT_TOKENS,
+        "hostname": os.uname().nodename, "arcadedb_jvm_args": JVM_ARGS,
         "native_thinking_requested": False, "thinking_control": "server default in serve_qwen_3.5-9b.sh; not remotely verified",
         "protocol": "VVAH detection through S9; exactly one Java file, no helpers; original names/comments retained; labels not copied",
     })
@@ -204,7 +211,8 @@ def scan(case, dataset, harness, session, dry_run):
         print(f"[{case.stem}] Prepared {len(before)} source file(s): {directory}", flush=True)
         return 0
 
-    env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1", PYTHONUNBUFFERED="1", NO_PROXY="127.0.0.1,localhost",
+    # Explicit initial and maximum heap sizes keep the embedded graph JVM consistent.
+    env = dict(os.environ, ARCADEDB_JVM_ARGS=JVM_ARGS, PYTHONDONTWRITEBYTECODE="1", PYTHONUNBUFFERED="1", NO_PROXY="127.0.0.1,localhost",
                VVAHARNESS_STATE_DIR=str(directory / "state"), VVAHARNESS_TRANSCRIPT_DIR=str(directory / "transcripts"),
                VVAHARNESS_NO_LOCAL_CONFIG="1", SCIP_STAGE_TRACE="1", LANGCHAIN_TRACING_V2="false", LANGCHAIN_TRACING="false",
                LANGSMITH_TRACING="false", PYTHONPATH=str(harness), OPENAI_API_KEY="EMPTY", OPENAI_BASE_URL=BASE_URL)
@@ -277,6 +285,7 @@ def main():
     if args.worker:
         return worker(args.worker.resolve())
 
+    run_started = time.monotonic()
     dataset = args.dataset.resolve()
     harness = args.harness.resolve()
     cases = input_files(dataset)
@@ -305,12 +314,15 @@ def main():
     total = len(cases)
     processed = 0
     failed = 0
+    sum_run_seconds = 0.0
     action = "Preparing" if args.dry_run else "Starting"
     completed_action = "Prepared" if args.dry_run else "Processed"
     try:
         for position, case in enumerate(cases, start=1):
             print(f"[{position}/{total}] {action} {case.name}; {processed} already processed", flush=True)
+            file_started = time.monotonic()
             failed += bool(scan(case, dataset, harness, session, args.dry_run))
+            sum_run_seconds += time.monotonic() - file_started
             processed += 1
             print(f"[progress] {completed_action} {processed}/{total}; failed: {failed}; remaining: {total - processed}", flush=True)
 
@@ -319,6 +331,18 @@ def main():
         return 130
 
     print(f"{completed_action} {processed}/{total} input file(s); failed processes/integrity checks: {failed}; session: {session}", flush=True)
+    for label, elapsed in (
+        ("Sum of individual runs", sum_run_seconds),
+        ("Total runtime", time.monotonic() - run_started),
+    ):
+        hours, remainder = divmod(int(elapsed), 3600)
+        minutes, seconds = divmod(remainder, 60)
+        print(
+            f"{label}: {hours} hour{'s' if hours != 1 else ''} "
+            f"{minutes} min{'s' if minutes != 1 else ''} "
+            f"{seconds} second{'s' if seconds != 1 else ''} in total",
+            flush=True,
+        )
     return 1 if failed else 0
 
 

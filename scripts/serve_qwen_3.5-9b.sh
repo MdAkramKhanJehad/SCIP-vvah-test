@@ -13,7 +13,7 @@ exec vllm serve /home/spl/akram/local_models/qwen3.5-9b \
   --dtype bfloat16 \
   --language-model-only \
   --max-model-len 262144 \
-  --gpu-memory-utilization 0.60 \
+  --gpu-memory-utilization 0.85 \
   --max-num-seqs 1 \
   --max-num-batched-tokens 8192 \
   --enable-prefix-caching \
