@@ -22,7 +22,7 @@ exec "$SCIP_VLLM_PYTHON" -m vllm.entrypoints.cli.main serve \
   --host 127.0.0.1 \
   --port 8001 \
   --tensor-parallel-size 1 \
-  --gpu-memory-utilization 0.70 \
+  --gpu-memory-utilization 0.55 \
   --max-model-len 262144 \
   --max-num-seqs 1 \
   --max-num-batched-tokens 2048 \

@@ -22,18 +22,18 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 
 # Qwen 3.5 9B: keep exactly one model settings block uncommented.
-MODEL = "qwen35-9b"
-BASE_URL = "http://127.0.0.1:8005/v1"
-MODEL_DIR = Path("/home/spl/akram/local_models/qwen3.5-9b")
-OUTPUT_TOKENS = 131072
-JVM_ARGS = "-Xms256m -Xmx4g"
-
-# Qwen 3.8 27B FP8: comment the block above and uncomment this block to switch.
-# MODEL = "qwen38-27b-fp8"
-# BASE_URL = "http://127.0.0.1:8001/v1"
-# MODEL_DIR = Path("/home/spl/akram/local_models/qwen38-vllm/models/Qwen3.8-27B-FP8")
+# MODEL = "qwen35-9b"
+# BASE_URL = "http://127.0.0.1:8005/v1"
+# MODEL_DIR = Path("/home/spl/akram/local_models/qwen3.5-9b")
 # OUTPUT_TOKENS = 131072
 # JVM_ARGS = "-Xms256m -Xmx4g"
+
+# Qwen 3.8 27B FP8: comment the block above and uncomment this block to switch.
+MODEL = "qwen38-27b-fp8"
+BASE_URL = "http://127.0.0.1:8001/v1"
+MODEL_DIR = Path("/home/spl/akram/local_models/qwen38-vllm/models/Qwen3.8-27B-FP8")
+OUTPUT_TOKENS = 131072
+JVM_ARGS = "-Xms256m -Xmx4g"
 
 
 # Save readable UTF-8 JSON for run metadata and stage outputs.
